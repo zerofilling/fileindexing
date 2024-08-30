@@ -23,7 +23,7 @@ public class FileSearch {
     private final IndexingService indexingService = FactoryContainer.instance().indexingService();
     private final FileSystemListener fileSystemListener = FactoryContainer.instance().fileSystemListener();
     private final SearchService searchService = FactoryContainer.instance().searchService();
-    private Status status = Status.INDEXING;
+    private volatile Status status = Status.INDEXING;
 
     @Builder
     private FileSearch(Config config, Status status) {
