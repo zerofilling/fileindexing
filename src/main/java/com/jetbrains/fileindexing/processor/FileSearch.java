@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 @Getter
@@ -23,12 +24,11 @@ public class FileSearch {
     private final IndexingService indexingService = FactoryContainer.instance().indexingService();
     private final FileSystemListener fileSystemListener = FactoryContainer.instance().fileSystemListener();
     private final SearchService searchService = FactoryContainer.instance().searchService();
-    private volatile Status status = Status.INDEXING;
+    private volatile AtomicReference<Status> status = new AtomicReference<>(Status.INDEXING);
 
     @Builder
-    private FileSearch(Config config, Status status) {
+    private FileSearch(Config config) {
         this.config = config;
-        this.status = status;
         initialize();
     }
 
@@ -41,10 +41,10 @@ public class FileSearch {
 
     private void initialize() {
         assert config != null;
-        status = Status.INDEXING;
+        status.set(Status.INDEXING);
         SearchStrategy searchStrategy = config.getSearchStrategy();
         CompletableFuture<Void> feature = indexingService.indexAll(config.getWatchingFolder(), searchStrategy);
-        feature.thenAccept(unused -> status = Status.READY);
+        feature.whenComplete((unused, exception) -> status.set(exception == null ? Status.READY : Status.FAILED));
         fileSystemListener.listenFilesChanges(config.getWatchingFolder(),
                 file -> indexingService.putIndex(file, searchStrategy),
                 file -> indexingService.removeIndex(file, searchStrategy));
