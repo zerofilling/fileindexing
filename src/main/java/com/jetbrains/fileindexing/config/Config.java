@@ -10,6 +10,7 @@ import java.util.List;
 
 @Getter
 @ToString
+//dsfsdf
 public final class Config {
     private final List<File> watchingFolders;
     private final SearchStrategy searchStrategy;

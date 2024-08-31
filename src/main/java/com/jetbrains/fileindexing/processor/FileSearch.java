@@ -27,6 +27,7 @@ public class FileSearch {
 
     @Builder
     private FileSearch(Config config) {
+        assert config != null;
         this.config = config;
         initialize();
     }

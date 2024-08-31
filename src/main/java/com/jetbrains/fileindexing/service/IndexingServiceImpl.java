@@ -1,7 +1,6 @@
 package com.jetbrains.fileindexing.service;
 
 import com.jetbrains.fileindexing.search.SearchStrategy;
-import com.jetbrains.fileindexing.utils.DaemonThreadFactory;
 import com.jetbrains.fileindexing.utils.TextFileFinder;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
@@ -12,19 +11,16 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 public class IndexingServiceImpl implements IndexingService {
-    private final ExecutorService executorService;
 
-    public IndexingServiceImpl() {
-        this.executorService = Executors.newSingleThreadExecutor(new DaemonThreadFactory());
-    }
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Override
     public CompletableFuture<Void> indexAll(List<File> watchingFiles, SearchStrategy searchStrategy) {
+        long lastUpdatedTime = searchStrategy.getIndexedTime();
         return CompletableFuture.runAsync(() -> {
-            TextFileFinder.findTextFiles(watchingFiles, file -> putIndex(file, searchStrategy));
+            TextFileFinder.findTextModifiedFiles(lastUpdatedTime, watchingFiles, file -> putIndex(file, searchStrategy));
         }, executorService);
     }
 

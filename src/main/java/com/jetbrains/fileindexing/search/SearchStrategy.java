@@ -9,4 +9,9 @@ public interface SearchStrategy {
     List<String> search(String term);
 
     void removeIndex(String key);
+
+    long getIndexedTime();
+
+    void putIndexedTime();
+
 }

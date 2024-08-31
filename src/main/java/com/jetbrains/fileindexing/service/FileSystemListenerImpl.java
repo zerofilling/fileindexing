@@ -1,6 +1,5 @@
 package com.jetbrains.fileindexing.service;
 
-import com.jetbrains.fileindexing.utils.DaemonThreadFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,7 +20,7 @@ public class FileSystemListenerImpl implements FileSystemListener {
     @SneakyThrows
     public FileSystemListenerImpl() {
         this.watchService = FileSystems.getDefault().newWatchService();
-        this.executorService = Executors.newSingleThreadExecutor(new DaemonThreadFactory());
+        this.executorService = Executors.newSingleThreadExecutor();
     }
 
     @Override

@@ -9,7 +9,7 @@ import java.io.File;
 public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Long getLongMetaData(GetMetadataParam param) {
-        return PropertyFileUtils.get(param.key(), 0L, getMetadataFile(param.repositoryFolder()));
+        return Long.parseLong(PropertyFileUtils.get(param.key(), "0", getMetadataFile(param.repositoryFolder())));
     }
 
     @Override

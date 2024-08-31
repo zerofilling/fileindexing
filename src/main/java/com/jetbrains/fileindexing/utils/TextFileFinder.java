@@ -7,17 +7,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class TextFileFinder {
-    public static void findTextFiles(List<File> files, Consumer<File> consume) {
-        FileVisitor.visit(files.toArray(value -> new File[files.size()]), consume, TextFileFinder::shouldIndex);
+public final class TextFileFinder {
+
+    public static void findTextModifiedFiles(Long lastUpdatedTime, List<File> files, Consumer<File> consume) {
+        FileVisitor.visitFiles(files.toArray(value -> new File[files.size()]), consume, file -> shouldIndex(lastUpdatedTime, file));
     }
 
-    public static boolean shouldIndex(File file) {
-        return isTextFile(file) && isFileChanged(file);
+    private static boolean shouldIndex(Long lastUpdatedTime, File file) {
+        return isFileChanged(lastUpdatedTime, file) && (file.isDirectory() || isTextFile(file));
     }
 
-    private static boolean isFileChanged(File file) {
-        return true; // todo implement
+    private static boolean isFileChanged(Long lastUpdatedTime, File file) {
+        return lastUpdatedTime < file.lastModified();
     }
 
     public static boolean isTextFile(File file) {

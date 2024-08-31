@@ -29,6 +29,11 @@ public class FileSystemAbstractFactoryImpl implements FileSystemAbstractFactory 
     }
 
     @Override
+    public MetaDataService metadataService() {
+        return new MetaDataServiceImpl();
+    }
+
+    @Override
     public MetadataRepository metadataRepository() {
         return new MetadataRepositoryImpl();
     }

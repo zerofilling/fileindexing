@@ -34,6 +34,7 @@ public class PropertyFileUtils {
         // Save the properties back to the file
         try (FileOutputStream fos = new FileOutputStream(propertyFile)) {
             properties.store(fos, null);
+            propertiesCache.put(propertyFile.getAbsolutePath(), properties);
         }
     }
 
@@ -48,7 +49,7 @@ public class PropertyFileUtils {
      * @throws IOException If an I/O error occurs.
      */
     @SneakyThrows
-    public static <T> T get(String key, T defaultValue, File propertyFile) {
+    public static String get(String key, String defaultValue, File propertyFile) {
         Properties properties = getProperties(propertyFile);
 
         // Get the value associated with the key
@@ -56,7 +57,7 @@ public class PropertyFileUtils {
 
         // Return the value if found, otherwise return the default value
         if (value != null) {
-            return (T) value; // Cast to the generic type
+            return value; // Cast to the generic type
         } else {
             return defaultValue;
         }
@@ -70,6 +71,13 @@ public class PropertyFileUtils {
      * @throws IOException If an I/O error occurs.
      */
     private static Properties getProperties(File propertyFile) throws IOException {
+        if(!propertyFile.exists()) {
+            File parentFile = propertyFile.getParentFile();
+            if(!parentFile.exists()) {
+                parentFile.mkdirs();
+            }
+            propertyFile.createNewFile();
+        }
         String filePath = propertyFile.getAbsolutePath();
         Properties properties = propertiesCache.get(filePath);
 
