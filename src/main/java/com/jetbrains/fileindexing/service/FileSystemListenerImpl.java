@@ -7,7 +7,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -50,9 +53,7 @@ public class FileSystemListenerImpl implements FileSystemListener {
                                 registerDirectory(filePath);
                             }
                         } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-                            if (file.isFile()) {
-                                deleted.accept(file);
-                            }
+                            deleted.accept(file);
                         }
                     }
                     key.reset();

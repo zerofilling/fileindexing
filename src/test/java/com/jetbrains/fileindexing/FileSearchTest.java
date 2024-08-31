@@ -10,7 +10,7 @@ import java.io.File;
 
 public class FileSearchTest {
     @Test
-    void testSearchWhenIndexing() throws InterruptedException {
+    void testSearchWhenIndexing() {
         FileSearch fileSearch = FileSearch.builder().config(
                         Config.builder()
                                 .searchStrategy(new TextContainsSearchStrategy(

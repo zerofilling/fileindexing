@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 public class IndexingServiceImpl implements IndexingService {
 
@@ -19,9 +20,7 @@ public class IndexingServiceImpl implements IndexingService {
     @Override
     public CompletableFuture<Void> indexAll(List<File> watchingFiles, SearchStrategy searchStrategy) {
         long lastUpdatedTime = searchStrategy.getIndexedTime();
-        return CompletableFuture.runAsync(() -> {
-            TextFileFinder.findTextModifiedFiles(lastUpdatedTime, watchingFiles, file -> putIndex(file, searchStrategy));
-        }, executorService);
+        return CompletableFuture.runAsync(() -> TextFileFinder.findTextModifiedFiles(lastUpdatedTime, watchingFiles, file -> putIndex(file, searchStrategy)), executorService);
     }
 
     @SneakyThrows
