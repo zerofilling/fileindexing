@@ -1,5 +1,7 @@
 package com.jetbrains.fileindexing.factory;
 
+import com.jetbrains.fileindexing.facade.IndexingFacade;
+import com.jetbrains.fileindexing.facade.IndexingFacadeImpl;
 import com.jetbrains.fileindexing.repository.IndexRepository;
 import com.jetbrains.fileindexing.repository.IndexRepositoryImpl;
 import com.jetbrains.fileindexing.repository.MetadataRepository;
@@ -36,5 +38,15 @@ public class FileSystemAbstractFactoryImpl implements FileSystemAbstractFactory 
     @Override
     public MetadataRepository metadataRepository() {
         return new MetadataRepositoryImpl();
+    }
+
+    @Override
+    public FileTaxonomyService fileTaxonomyService() {
+        return new FileTaxonomyServiceInMemory();
+    }
+
+    @Override
+    public IndexingFacade indexingFacade() {
+        return new IndexingFacadeImpl();
     }
 }

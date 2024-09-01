@@ -2,6 +2,7 @@ package com.jetbrains.fileindexing.processor;
 
 import com.jetbrains.fileindexing.config.Config;
 import com.jetbrains.fileindexing.config.FactoryContainer;
+import com.jetbrains.fileindexing.facade.IndexingFacade;
 import com.jetbrains.fileindexing.search.SearchStrategy;
 import com.jetbrains.fileindexing.service.FileSystemListener;
 import com.jetbrains.fileindexing.service.IndexingService;
@@ -20,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public class FileSearch {
     private final Config config;
-    private final IndexingService indexingService = FactoryContainer.instance().indexingService();
+    private final IndexingFacade indexingFacade = FactoryContainer.instance().indexingFacade();
     private final FileSystemListener fileSystemListener = FactoryContainer.instance().fileSystemListener();
     private final SearchService searchService = FactoryContainer.instance().searchService();
     private volatile AtomicReference<Status> status = new AtomicReference<>(Status.INDEXING);
@@ -44,11 +45,11 @@ public class FileSearch {
         log.info("Initializing file search...");
         status.set(Status.INDEXING);
         SearchStrategy searchStrategy = config.getSearchStrategy();
-        CompletableFuture<Void> feature = indexingService.indexAll(config.getWatchingFolders(), searchStrategy);
+        CompletableFuture<Void> feature = indexingFacade.indexAll(config.getWatchingFolders(), searchStrategy);
         feature.whenComplete((unused, exception) -> status.set(exception == null ? Status.READY : Status.FAILED));
         fileSystemListener.listenFilesChanges(config.getWatchingFolders(),
-                file -> indexingService.putIndex(file, searchStrategy),
-                file -> indexingService.removeIndex(file, searchStrategy));
+                file -> indexingFacade.putIndex(file, searchStrategy),
+                file -> indexingFacade.removeIndex(file, searchStrategy));
     }
 }
 

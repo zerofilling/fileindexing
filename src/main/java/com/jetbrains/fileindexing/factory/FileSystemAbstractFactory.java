@@ -1,11 +1,9 @@
 package com.jetbrains.fileindexing.factory;
 
+import com.jetbrains.fileindexing.facade.IndexingFacade;
 import com.jetbrains.fileindexing.repository.IndexRepository;
 import com.jetbrains.fileindexing.repository.MetadataRepository;
-import com.jetbrains.fileindexing.service.FileSystemListener;
-import com.jetbrains.fileindexing.service.IndexingService;
-import com.jetbrains.fileindexing.service.MetaDataService;
-import com.jetbrains.fileindexing.service.SearchService;
+import com.jetbrains.fileindexing.service.*;
 
 public interface FileSystemAbstractFactory {
     IndexingService indexingService();
@@ -14,5 +12,7 @@ public interface FileSystemAbstractFactory {
     IndexRepository indexRepository();
     MetaDataService metadataService();
     MetadataRepository metadataRepository();
+    FileTaxonomyService fileTaxonomyService();
+    IndexingFacade indexingFacade();
 
 }
