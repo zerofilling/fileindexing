@@ -6,6 +6,7 @@ import com.jetbrains.fileindexing.processor.FileSearch;
 import com.jetbrains.fileindexing.search.TextContainsSearchStrategy;
 
 import java.io.File;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -17,5 +18,7 @@ public class Main {
                                 .watchingFolders(Lists.newArrayList(new File("/Users/david/dev/fileindexing/src/test/resources")))
                                 .build())
                 .build();
+        List<File> result = fileSearch.search("fsd");
+        System.out.printf("");
     }
 }
