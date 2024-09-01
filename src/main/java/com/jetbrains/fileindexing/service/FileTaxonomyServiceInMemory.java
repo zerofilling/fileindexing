@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class FileTaxonomyServiceInMemory implements FileTaxonomyService {
 
-    private Map<String, Node> nodes = new HashMap<>();
+    private final Map<String, Node> nodes = new HashMap<>();
 
     @Override
     public void addFile(File file) {
@@ -43,8 +43,7 @@ public class FileTaxonomyServiceInMemory implements FileTaxonomyService {
     private Node getOrCreateNode(File file) {
         String[] folderNames = file.getAbsolutePath().split(Pattern.quote(File.separator));
         Node currentNode = null;
-        for (int i = 0; i < folderNames.length; ++i) {
-            String folderName = folderNames[i];
+        for (String folderName : folderNames) {
             if (StringUtils.isNotBlank(folderName)) {
                 Map<String, Node> children = currentNode == null ? nodes : currentNode.getChildren();
                 Node finalCurrentNode = currentNode;
@@ -99,7 +98,7 @@ public class FileTaxonomyServiceInMemory implements FileTaxonomyService {
 
     @Getter
     @RequiredArgsConstructor
-    private class Node {
+    private static class Node {
         private final boolean isDirectory;
         private final Map<String, Node> children;
         private final String name;
