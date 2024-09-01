@@ -2,10 +2,13 @@ package com.jetbrains.fileindexing.utils;
 
 import lombok.SneakyThrows;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.Properties;
 
 /**
  * Utility class for managing properties in a property file. Provides methods to read and write properties,

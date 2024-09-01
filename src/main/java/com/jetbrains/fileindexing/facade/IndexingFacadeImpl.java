@@ -3,7 +3,7 @@ package com.jetbrains.fileindexing.facade;
 import com.jetbrains.fileindexing.config.FactoryContainer;
 import com.jetbrains.fileindexing.search.SearchStrategy;
 import com.jetbrains.fileindexing.service.FileTaxonomyService;
-import com.jetbrains.fileindexing.service.IndexingService;
+import com.jetbrains.fileindexing.search.Indexing;
 
 import java.io.File;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 public class IndexingFacadeImpl implements IndexingFacade {
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
-    private final IndexingService indexingService = FactoryContainer.instance().indexingService();
+    private final Indexing indexing = FactoryContainer.instance().indexing();
     private final FileTaxonomyService fileTaxonomyService = FactoryContainer.instance().fileTaxonomyService();
 
     @Override
@@ -22,7 +22,7 @@ public class IndexingFacadeImpl implements IndexingFacade {
         CompletableFuture<Void> addFoldersFuture = CompletableFuture.runAsync(() ->
                 watchingFolders.forEach(fileTaxonomyService::addFolder), executorService);
         CompletableFuture<Void> indexFuture = CompletableFuture.runAsync(() ->
-                indexingService.indexAll(watchingFolders, searchStrategy), executorService);
+                indexing.indexAll(watchingFolders, searchStrategy), executorService);
         return CompletableFuture.allOf(addFoldersFuture, indexFuture);
     }
 
@@ -30,17 +30,22 @@ public class IndexingFacadeImpl implements IndexingFacade {
     public void putIndex(File file, SearchStrategy searchStrategy) {
         if (file.isDirectory()) {
             fileTaxonomyService.addFolder(file);
-            fileTaxonomyService.visitFiles(file, it -> indexingService.putIndex(it, searchStrategy));
+            fileTaxonomyService.visitFiles(file, it -> indexing.putIndex(it, searchStrategy));
         } else {
             fileTaxonomyService.addFile(file);
-            indexingService.putIndex(file, searchStrategy);
+            indexing.putIndex(file, searchStrategy);
         }
     }
 
     @Override
     public void removeIndex(File file, SearchStrategy searchStrategy) {
-        indexingService.removeIndex(file, searchStrategy);
-        fileTaxonomyService.visitFiles(file, it -> indexingService.removeIndex(it, searchStrategy));
+        indexing.removeIndex(file, searchStrategy);
+        fileTaxonomyService.visitFiles(file, it -> indexing.removeIndex(it, searchStrategy));
         fileTaxonomyService.delete(file);
+    }
+
+    @Override
+    public List<File> search(String term, SearchStrategy searchStrategy) {
+        return indexing.search(term, searchStrategy);
     }
 }

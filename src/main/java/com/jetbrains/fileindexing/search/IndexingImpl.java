@@ -1,6 +1,5 @@
-package com.jetbrains.fileindexing.service;
+package com.jetbrains.fileindexing.search;
 
-import com.jetbrains.fileindexing.search.SearchStrategy;
 import com.jetbrains.fileindexing.utils.TextFileFinder;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
@@ -8,9 +7,9 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class IndexingServiceImpl implements IndexingService {
-
+public class IndexingImpl implements Indexing {
 
     @Override
     public void indexAll(List<File> watchingFiles, SearchStrategy searchStrategy) {
@@ -27,5 +26,10 @@ public class IndexingServiceImpl implements IndexingService {
     @Override
     public void removeIndex(File file, SearchStrategy searchStrategy) {
         searchStrategy.removeIndex(file.getAbsolutePath());
+    }
+
+    @Override
+    public List<File> search(String term, SearchStrategy searchStrategy) {
+        return searchStrategy.search(term).stream().map(File::new).collect(Collectors.toList());
     }
 }

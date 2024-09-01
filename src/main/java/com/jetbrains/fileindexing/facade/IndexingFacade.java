@@ -12,4 +12,6 @@ public interface IndexingFacade {
     void putIndex(File file, SearchStrategy searchStrategy);
 
     void removeIndex(File file, SearchStrategy searchStrategy);
+
+    List<File> search(String term, SearchStrategy searchStrategy);
 }

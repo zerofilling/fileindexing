@@ -6,13 +6,15 @@ import com.jetbrains.fileindexing.repository.IndexRepository;
 import com.jetbrains.fileindexing.repository.IndexRepositoryImpl;
 import com.jetbrains.fileindexing.repository.MetadataRepository;
 import com.jetbrains.fileindexing.repository.MetadataRepositoryImpl;
+import com.jetbrains.fileindexing.search.Indexing;
+import com.jetbrains.fileindexing.search.IndexingImpl;
 import com.jetbrains.fileindexing.service.*;
 
 public class FileSystemAbstractFactoryImpl implements FileSystemAbstractFactory {
 
     @Override
-    public IndexingService indexingService() {
-        return new IndexingServiceImpl();
+    public Indexing indexing() {
+        return new IndexingImpl();
     }
 
     @Override
@@ -21,8 +23,8 @@ public class FileSystemAbstractFactoryImpl implements FileSystemAbstractFactory 
     }
 
     @Override
-    public SearchService searchService() {
-        return new SearchServiceImpl();
+    public IndexService searchService() {
+        return new IndexServiceImpl();
     }
 
     @Override
@@ -48,5 +50,10 @@ public class FileSystemAbstractFactoryImpl implements FileSystemAbstractFactory 
     @Override
     public IndexingFacade indexingFacade() {
         return new IndexingFacadeImpl();
+    }
+
+    @Override
+    public IndexService indexService() {
+        return new IndexServiceImpl();
     }
 }

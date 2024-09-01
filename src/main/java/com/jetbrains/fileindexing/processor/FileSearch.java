@@ -5,7 +5,7 @@ import com.jetbrains.fileindexing.config.FactoryContainer;
 import com.jetbrains.fileindexing.facade.IndexingFacade;
 import com.jetbrains.fileindexing.search.SearchStrategy;
 import com.jetbrains.fileindexing.service.FileSystemListener;
-import com.jetbrains.fileindexing.service.SearchService;
+import com.jetbrains.fileindexing.service.IndexService;
 import com.jetbrains.fileindexing.utils.SearchNotReadyException;
 import com.jetbrains.fileindexing.utils.Status;
 import lombok.Builder;
@@ -22,7 +22,6 @@ public class FileSearch {
     private final Config config;
     private final IndexingFacade indexingFacade = FactoryContainer.instance().indexingFacade();
     private final FileSystemListener fileSystemListener = FactoryContainer.instance().fileSystemListener();
-    private final SearchService searchService = FactoryContainer.instance().searchService();
     private volatile AtomicReference<Status> status = new AtomicReference<>(Status.INDEXING);
 
     @Builder
@@ -36,7 +35,7 @@ public class FileSearch {
         if (Objects.equals(status, Status.INDEXING)) {
             throw new SearchNotReadyException();
         }
-        return searchService.search(term, config.getSearchStrategy());
+        return indexingFacade.search(term, config.getSearchStrategy());
     }
 
     private void initialize() {
