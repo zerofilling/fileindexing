@@ -1,11 +1,12 @@
 package com.jetbrains.fileindexing.service;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -17,13 +18,13 @@ public class FileTaxonomyServiceInMemory implements FileTaxonomyService {
     @Override
     public void addFile(File file) {
         Node parentNode = getOrCreateNode(file.getParentFile());
-        parentNode.children().put(file.getName(), new Node(false, null, file.getName()));
+        parentNode.getChildren().put(file.getName(), new Node(false, null, file.getName(), parentNode));
     }
 
     @Override
     public void delete(File file) {
         Node parentNode = getOrCreateNode(file.getParentFile());
-        parentNode.children().remove(file.getName());
+        parentNode.getChildren().remove(file.getName());
     }
 
     @SneakyThrows
@@ -45,8 +46,9 @@ public class FileTaxonomyServiceInMemory implements FileTaxonomyService {
         for (int i = 0; i < folderNames.length; ++i) {
             String folderName = folderNames[i];
             if (StringUtils.isNotBlank(folderName)) {
-                Map<String, Node> children = currentNode == null ? nodes : currentNode.children();
-                children.computeIfAbsent(folderName, s -> new Node(true, new HashMap<>(), s));
+                Map<String, Node> children = currentNode == null ? nodes : currentNode.getChildren();
+                Node finalCurrentNode = currentNode;
+                children.computeIfAbsent(folderName, s -> new Node(true, new HashMap<>(), s, finalCurrentNode));
                 currentNode = children.get(folderName);
             }
         }
@@ -66,17 +68,17 @@ public class FileTaxonomyServiceInMemory implements FileTaxonomyService {
             if (node == null) {
                 break;
             }
-            children = node.children();
+            children = node.getChildren();
         }
-        if (node != null) {
-            visitNodes(node, childFile);
+        if (node != null && node.isDirectory()) {
+            visitChildNodes(node, childFile);
         }
     }
 
-    private void visitNodes(Node node, Consumer<File> childFile) {
-        node.children().forEach((key, child) -> {
+    private void visitChildNodes(Node node, Consumer<File> childFile) {
+        node.getChildren().forEach((key, child) -> {
             if (child.isDirectory()) {
-                visitNodes(child, childFile);
+                visitChildNodes(child, childFile);
             } else {
                 childFile.accept(nodeToFile(child));
             }
@@ -87,14 +89,20 @@ public class FileTaxonomyServiceInMemory implements FileTaxonomyService {
         StringBuilder pathBuilder = new StringBuilder(File.separator);
         List<String> path = new ArrayList<>();
         while (node != null) {
-            path.add(node.name());
+            path.add(node.getName());
+            node = node.getParent();
         }
         Collections.reverse(path);
         String filePath = pathBuilder.append(StringUtils.join(path, File.separator)).toString();
         return new File(filePath);
     }
 
-    private record Node(boolean isDirectory, Map<String, Node> children, String name) {
-
+    @Getter
+    @RequiredArgsConstructor
+    private class Node {
+        private final boolean isDirectory;
+        private final Map<String, Node> children;
+        private final String name;
+        private final Node parent;
     }
 }

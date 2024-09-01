@@ -8,23 +8,29 @@ import com.jetbrains.fileindexing.service.IndexingService;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class IndexingFacadeImpl implements IndexingFacade {
 
+    private final ExecutorService executorService = Executors.newFixedThreadPool(2);
     private final IndexingService indexingService = FactoryContainer.instance().indexingService();
     private final FileTaxonomyService fileTaxonomyService = FactoryContainer.instance().fileTaxonomyService();
 
     @Override
     public CompletableFuture<Void> indexAll(List<File> watchingFolders, SearchStrategy searchStrategy) {
-        watchingFolders.forEach(fileTaxonomyService::addFolder); // todo join 2 threads
-        return indexingService.indexAll(watchingFolders, searchStrategy);
+        CompletableFuture<Void> addFoldersFuture = CompletableFuture.runAsync(() ->
+                watchingFolders.forEach(fileTaxonomyService::addFolder), executorService);
+        CompletableFuture<Void> indexFuture = CompletableFuture.runAsync(() ->
+                indexingService.indexAll(watchingFolders, searchStrategy), executorService);
+        return CompletableFuture.allOf(addFoldersFuture, indexFuture);
     }
 
     @Override
     public void putIndex(File file, SearchStrategy searchStrategy) {
         if (file.isDirectory()) {
             fileTaxonomyService.addFolder(file);
-            fileTaxonomyService.visitFiles(file, it -> indexingService.putIndex(it, searchStrategy)); // todo put index if need
+            fileTaxonomyService.visitFiles(file, it -> indexingService.putIndex(it, searchStrategy));
         } else {
             fileTaxonomyService.addFile(file);
             indexingService.putIndex(file, searchStrategy);

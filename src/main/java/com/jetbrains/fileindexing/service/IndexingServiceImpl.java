@@ -8,19 +8,14 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 public class IndexingServiceImpl implements IndexingService {
 
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Override
-    public CompletableFuture<Void> indexAll(List<File> watchingFiles, SearchStrategy searchStrategy) {
+    public void indexAll(List<File> watchingFiles, SearchStrategy searchStrategy) {
         long lastUpdatedTime = searchStrategy.getIndexedTime();
-        return CompletableFuture.runAsync(() -> TextFileFinder.findTextModifiedFiles(lastUpdatedTime, watchingFiles, file -> putIndex(file, searchStrategy)), executorService);
+        TextFileFinder.findTextModifiedFiles(lastUpdatedTime, watchingFiles, file -> putIndex(file, searchStrategy));
     }
 
     @SneakyThrows
