@@ -6,6 +6,7 @@ import com.jetbrains.fileindexing.utils.PropertyFileUtils;
 
 import java.io.File;
 
+// todo implement it with sql light, inject with lightweight
 public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Long getLongMetaData(GetMetadataParam param) {
