@@ -23,11 +23,6 @@ public class FileSystemAbstractFactoryImpl implements FileSystemAbstractFactory 
     }
 
     @Override
-    public IndexService searchService() {
-        return new IndexServiceImpl();
-    }
-
-    @Override
     public IndexRepository indexRepository() {
         return new IndexRepositoryImpl();
     }
