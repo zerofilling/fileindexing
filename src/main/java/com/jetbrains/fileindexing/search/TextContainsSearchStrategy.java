@@ -1,6 +1,7 @@
 package com.jetbrains.fileindexing.search;
 
 import com.jetbrains.fileindexing.config.FactoryContainer;
+import com.jetbrains.fileindexing.repository.DbInit;
 import com.jetbrains.fileindexing.service.IndexService;
 import com.jetbrains.fileindexing.service.MetaDataService;
 import lombok.extern.slf4j.Slf4j;
@@ -14,10 +15,12 @@ public class TextContainsSearchStrategy implements SearchStrategy {
     private final File dataFolder;
     private final IndexService indexService;
     private final MetaDataService metaDataService;
+    private final String dbFilePath;
 
     public TextContainsSearchStrategy(File dataFolder) {
         this.dataFolder = dataFolder;
-        String dbFilePath = dataFolder + File.separator + "fileindex.db";
+        this.dbFilePath = dataFolder + File.separator + "fileindex.db";
+        DbInit.init(dbFilePath);
         indexService = FactoryContainer.beansAbstractFactory().indexService(dbFilePath);
         metaDataService = FactoryContainer.beansAbstractFactory().metadataService(dbFilePath);
     }
@@ -50,5 +53,11 @@ public class TextContainsSearchStrategy implements SearchStrategy {
     @Override
     public void putIndexedTime() {
         metaDataService.updateLastTime(dataFolder);
+    }
+
+    @Override
+    public void cleanDb() {
+        new File(dbFilePath).delete();
+        DbInit.init(dbFilePath);
     }
 }

@@ -2,7 +2,10 @@ package com.jetbrains.fileindexing.repository;
 
 import com.jetbrains.fileindexing.factory.ConnectionFactory;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Optional;
 
 public class MetadataRepositoryImpl implements MetadataRepository {
@@ -11,19 +14,19 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     public MetadataRepositoryImpl(String dbFilePath) throws SQLException {
         connectionFactory = ConnectionFactory.getInstance(dbFilePath);
-        initializeDatabase();
+//        initializeDatabase();
     }
 
-    private void initializeDatabase() throws SQLException {
-        String createTableSQL = "CREATE TABLE IF NOT EXISTS `metadata` (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "key TEXT NOT NULL UNIQUE, " +
-                "longvalue LONG NOT NULL)";
-        try (Connection connection = connectionFactory.getConnection();
-             Statement stmt = connection.createStatement()) {
-            stmt.execute(createTableSQL);
-        }
-    }
+//    private void initializeDatabase() throws SQLException {
+//        String createTableSQL = "CREATE TABLE IF NOT EXISTS `metadata` (" +
+//                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+//                "key TEXT NOT NULL UNIQUE, " +
+//                "longvalue LONG NOT NULL)";
+//        try (Connection connection = connectionFactory.getConnection();
+//             Statement stmt = connection.createStatement()) {
+//            stmt.execute(createTableSQL);
+//        }
+//    }
 
     @Override
     public Optional<Long> getLongMetaData(String key) throws SQLException {

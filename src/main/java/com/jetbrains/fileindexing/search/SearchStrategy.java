@@ -14,4 +14,5 @@ public interface SearchStrategy {
 
     void putIndexedTime();
 
+    void cleanDb();
 }

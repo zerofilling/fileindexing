@@ -25,7 +25,7 @@ public class Main {
                 log.info(result.toString());
                 break;
             } catch (Exception e) {
-                log.info("search not ready");
+//                log.info("search not ready");
             }
         }
 
