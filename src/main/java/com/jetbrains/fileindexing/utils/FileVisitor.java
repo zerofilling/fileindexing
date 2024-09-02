@@ -24,16 +24,17 @@ public final class FileVisitor {
      */
     public static void visitFiles(File[] files, Consumer<File> consume, Predicate<File> shouldVisit) {
         for (File file : files) {
-            if (shouldVisit.test(file)) {
-                if (file.isDirectory()) {
-                    File[] children = file.listFiles();
-                    if (children != null) {
-                        visitFiles(children, consume, shouldVisit);
-                    }
-                } else {
+            if (file.isDirectory()) {
+                File[] children = file.listFiles();
+                if (children != null) {
+                    visitFiles(children, consume, shouldVisit);
+                }
+            } else {
+                if (shouldVisit.test(file)) {
                     consume.accept(file);
                 }
             }
         }
+
     }
 }
