@@ -8,12 +8,13 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 public class FileTaxonomyServiceInMemory implements FileTaxonomyService {
 
-    private final Map<String, Node> nodes = new HashMap<>();
+    private final Map<String, Node> nodes = new ConcurrentHashMap<>();
 
     @Override
     public void addFile(File file) {
