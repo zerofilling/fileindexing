@@ -17,13 +17,24 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The {@code FileSearch} class is responsible for managing the indexing and searching of files
+ * in the specified directories. It initializes the indexing process, listens for file system changes,
+ * and provides a search function to query the indexed files.
+ */
 @Slf4j
 public class FileSearch {
+
     private final Config config;
     private final IndexingFacade indexingFacade = FactoryContainer.beansAbstractFactory().indexingFacade();
     private final FileSystemListener fileSystemListener = FactoryContainer.beansAbstractFactory().fileSystemListener();
     private final AtomicReference<Status> status = new AtomicReference<>(Status.INDEXING);
 
+    /**
+     * Constructs a {@code FileSearch} instance with the specified configuration.
+     *
+     * @param config the configuration to be used for indexing and searching files
+     */
     @Builder
     private FileSearch(Config config) {
         assert config != null;
@@ -31,6 +42,13 @@ public class FileSearch {
         initialize();
     }
 
+    /**
+     * Searches for files that contain the specified term using the configured search strategy.
+     *
+     * @param term the term to search for
+     * @return a list of files that contain the search term
+     * @throws SearchNotReadyException if the search is attempted while indexing is still in progress
+     */
     public List<File> search(String term) {
         if (Objects.equals(status.get(), Status.INDEXING)) {
             throw new SearchNotReadyException();
@@ -38,6 +56,10 @@ public class FileSearch {
         return indexingFacade.search(term, config.getSearchStrategy());
     }
 
+    /**
+     * Initializes the file search by starting the indexing process and setting up
+     * listeners for file system changes. The method is called during object construction.
+     */
     private void initialize() {
         assert config != null;
         log.info("Initializing file search...");
@@ -54,7 +76,6 @@ public class FileSearch {
                     status.set(Status.FAILED);
                 }
             }
-            ;
             log.info("Index initialization completed, status: '{}'", status.get());
         });
         fileSystemListener.listenFilesChanges(config.getWatchingFolders(),
@@ -74,12 +95,14 @@ public class FileSearch {
                 });
     }
 
+    /**
+     * Re-indexes all files from scratch by cleaning the database and reinitializing the indexing process.
+     * This method is called if the database crashes during the indexing process.
+     */
     private void reIndexFromScratch() {
         status.set(Status.INDEXING);
         log.info("Start reindexing process");
         config.getSearchStrategy().cleanDb();
         CompletableFuture.runAsync(this::initialize);
-
     }
 }
-

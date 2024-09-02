@@ -15,19 +15,7 @@ public class IndexRepositoryImpl implements IndexRepository {
 
     public IndexRepositoryImpl(String dbFilePath) throws SQLException {
         connectionFactory = ConnectionFactory.getInstance(dbFilePath);
-//        initializeDatabase();
     }
-
-//    private void initializeDatabase() throws SQLException {
-//        String createTableSQL = "CREATE TABLE IF NOT EXISTS `index` (" +
-//                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-//                "key TEXT NOT NULL UNIQUE, " +
-//                "value TEXT NOT NULL)";
-//        try (Connection connection = connectionFactory.getConnection();
-//             Statement stmt = connection.createStatement()) {
-//            stmt.execute(createTableSQL);
-//        }
-//    }
 
     @Override
     public List<String> search(String term) throws SQLException {
