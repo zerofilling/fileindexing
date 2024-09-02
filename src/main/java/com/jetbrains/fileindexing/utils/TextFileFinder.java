@@ -3,6 +3,10 @@ package com.jetbrains.fileindexing.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Consumer;
@@ -79,10 +83,13 @@ public final class TextFileFinder {
      * @return {@code true} if the byte array is valid UTF-8; {@code false} otherwise
      */
     private static boolean isValidUTF8(byte[] bytes) {
+        CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
+        decoder.onMalformedInput(CodingErrorAction.REPORT);
+        decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
         try {
-            new String(bytes, StandardCharsets.UTF_8);
+            decoder.decode(ByteBuffer.wrap(bytes));
             return true;
-        } catch (Exception e) {
+        } catch (CharacterCodingException e) {
             return false;
         }
     }

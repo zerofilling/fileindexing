@@ -4,6 +4,7 @@ import com.jetbrains.fileindexing.config.FactoryContainer;
 import com.jetbrains.fileindexing.search.Indexing;
 import com.jetbrains.fileindexing.search.SearchStrategy;
 import com.jetbrains.fileindexing.service.FileTaxonomyService;
+import com.jetbrains.fileindexing.utils.TextFileFinder;
 
 import java.io.File;
 import java.util.List;
@@ -31,7 +32,7 @@ public class IndexingFacadeImpl implements IndexingFacade {
         if (file.isDirectory()) {
             fileTaxonomyService.addFolder(file);
             fileTaxonomyService.visitFiles(file, it -> indexing.putIndex(it, searchStrategy));
-        } else {
+        } else if (TextFileFinder.isTextFile(file)) {
             fileTaxonomyService.addFile(file);
             indexing.putIndex(file, searchStrategy);
         }
