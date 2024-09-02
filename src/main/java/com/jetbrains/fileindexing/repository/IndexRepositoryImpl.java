@@ -1,5 +1,6 @@
 package com.jetbrains.fileindexing.repository;
 
+import com.jetbrains.fileindexing.factory.ConnectionFactory;
 import lombok.SneakyThrows;
 
 import java.sql.*;
@@ -10,65 +11,58 @@ import java.util.List;
 // may be this should be prototype, and IndexService should be injected as lightweight
 public class IndexRepositoryImpl implements IndexRepository {
 
-    private void initializeDatabase(String dbFilePath) throws SQLException {
+    private final ConnectionFactory connectionFactory;
+
+    @SneakyThrows
+    public IndexRepositoryImpl(String dbFilePath) {
+        connectionFactory = ConnectionFactory.getInstance(dbFilePath);
+        initializeDatabase();
+    }
+
+    private void initializeDatabase() throws SQLException {
         String createTableSQL = "CREATE TABLE IF NOT EXISTS `index` (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "key TEXT NOT NULL UNIQUE, " +
                 "value TEXT NOT NULL)";
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbFilePath);
+        try (Connection connection = connectionFactory.getConnection();
              Statement stmt = connection.createStatement()) {
             stmt.execute(createTableSQL);
         }
     }
 
-    @SneakyThrows
     @Override
-    public List<String> search(String term, String dbFilePath) {
-        initializeDatabase(dbFilePath);
+    public List<String> search(String term) throws SQLException {
         List<String> results = new ArrayList<>();
         String querySQL = "SELECT key, value FROM `index` WHERE value LIKE ?";
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbFilePath);
+        try (Connection connection = connectionFactory.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(querySQL)) {
             pstmt.setString(1, "%" + term + "%");
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 results.add(rs.getString("key"));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-//            todo implement error handling
         }
         return results;
     }
 
-    @SneakyThrows
     @Override
-    public void putIndex(String key, String value, String dbFilePath) {
-        initializeDatabase(dbFilePath);
+    public void putIndex(String key, String value) throws SQLException {
         String insertSQL = "INSERT OR REPLACE INTO `index` (key, value) VALUES (?, ?)";
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbFilePath);
+        try (Connection connection = connectionFactory.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
             pstmt.setString(1, key);
             pstmt.setString(2, value);
             pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            //            todo implement error handling
         }
     }
 
-    @SneakyThrows
     @Override
-    public void removeIndex(String key, String dbFilePath) {
+    public void removeIndex(String key) throws SQLException {
         String deleteSQL = "DELETE FROM `index` WHERE key = ?";
-        initializeDatabase(dbFilePath);
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbFilePath);
+        try (Connection connection = connectionFactory.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(deleteSQL)) {
             pstmt.setString(1, key);
             pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            //            todo implement error handling
         }
     }
 }

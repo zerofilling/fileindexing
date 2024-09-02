@@ -1,28 +1,28 @@
 package com.jetbrains.fileindexing.config;
 
-import com.jetbrains.fileindexing.factory.FileSystemAbstractFactory;
-import com.jetbrains.fileindexing.factory.FileSystemAbstractFactoryImpl;
+import com.jetbrains.fileindexing.factory.BeansAbstractFactory;
+import com.jetbrains.fileindexing.factory.BeansAbstractFactoryImpl;
 import lombok.Getter;
 
 @Getter
 public final class FactoryContainer {
 
-    private static FileSystemAbstractFactory instance;
+    private static BeansAbstractFactory beansAbstractFactory;
 
     private FactoryContainer() {
 
     }
 
     // Get the instance
-    public static FileSystemAbstractFactory instance() {
-        if (instance == null) {
+    public static BeansAbstractFactory beansAbstractFactory() {
+        if (beansAbstractFactory == null) {
             synchronized (FactoryContainer.class) {
-                if (instance == null) {
-                    instance = new FileSystemAbstractFactoryImpl();
+                if (beansAbstractFactory == null) {
+                    beansAbstractFactory = new BeansAbstractFactoryImpl();
                 }
             }
         }
-        return instance;
+        return beansAbstractFactory;
     }
 
 }

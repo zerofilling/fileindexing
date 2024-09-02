@@ -1,9 +1,9 @@
 package com.jetbrains.fileindexing.facade;
 
 import com.jetbrains.fileindexing.config.FactoryContainer;
+import com.jetbrains.fileindexing.search.Indexing;
 import com.jetbrains.fileindexing.search.SearchStrategy;
 import com.jetbrains.fileindexing.service.FileTaxonomyService;
-import com.jetbrains.fileindexing.search.Indexing;
 
 import java.io.File;
 import java.util.List;
@@ -14,8 +14,8 @@ import java.util.concurrent.Executors;
 public class IndexingFacadeImpl implements IndexingFacade {
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
-    private final Indexing indexing = FactoryContainer.instance().indexing();
-    private final FileTaxonomyService fileTaxonomyService = FactoryContainer.instance().fileTaxonomyService();
+    private final Indexing indexing = FactoryContainer.beansAbstractFactory().indexing();
+    private final FileTaxonomyService fileTaxonomyService = FactoryContainer.beansAbstractFactory().fileTaxonomyService();
 
     @Override
     public CompletableFuture<Void> indexAll(List<File> watchingFolders, SearchStrategy searchStrategy) {

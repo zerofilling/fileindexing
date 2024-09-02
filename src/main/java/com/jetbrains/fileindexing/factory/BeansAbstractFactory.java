@@ -9,21 +9,21 @@ import com.jetbrains.fileindexing.service.FileTaxonomyService;
 import com.jetbrains.fileindexing.service.IndexService;
 import com.jetbrains.fileindexing.service.MetaDataService;
 
-public interface FileSystemAbstractFactory {
+public interface BeansAbstractFactory {
     Indexing indexing();
 
     FileSystemListener fileSystemListener();
 
-    IndexRepository indexRepository();
+    MetaDataService metadataService(String dbFilePath);
 
-    MetaDataService metadataService();
+    IndexService indexService(String dbFilePath);
 
-    MetadataRepository metadataRepository();
+    MetadataRepository metadataRepository(String dbFilePath);
+
+    IndexRepository indexRepository(String dbFilePath);
 
     FileTaxonomyService fileTaxonomyService();
 
     IndexingFacade indexingFacade();
-
-    IndexService indexService();
 
 }

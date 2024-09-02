@@ -1,10 +1,9 @@
 package com.jetbrains.fileindexing.repository;
 
-import com.jetbrains.fileindexing.param.GetMetadataParam;
-import com.jetbrains.fileindexing.param.PutMetadataParam;
+import java.sql.SQLException;
 
 public interface MetadataRepository {
-    Long getLongMetaData(GetMetadataParam param);
+    Long getLongMetaData(String key) throws SQLException; // todo optional
 
-    void putLongMetaData(PutMetadataParam param);
+    void putLongMetaData(String key, Long value) throws SQLException;
 }

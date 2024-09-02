@@ -1,24 +1,53 @@
 package com.jetbrains.fileindexing.repository;
 
-import com.jetbrains.fileindexing.param.GetMetadataParam;
-import com.jetbrains.fileindexing.param.PutMetadataParam;
-import com.jetbrains.fileindexing.utils.PropertyFileUtils;
+import com.jetbrains.fileindexing.factory.ConnectionFactory;
+import lombok.SneakyThrows;
 
-import java.io.File;
+import java.sql.*;
 
-// todo implement it with sql light, inject with lightweight
 public class MetadataRepositoryImpl implements MetadataRepository {
-    @Override
-    public Long getLongMetaData(GetMetadataParam param) {
-        return Long.parseLong(PropertyFileUtils.get(param.key(), "0", getMetadataFile(param.repositoryFolder())));
+
+    private final ConnectionFactory connectionFactory;
+
+    @SneakyThrows
+    public MetadataRepositoryImpl(String dbFilePath) {
+        connectionFactory = ConnectionFactory.getInstance(dbFilePath);
+        initializeDatabase();
+    }
+
+    private void initializeDatabase() throws SQLException {
+        String createTableSQL = "CREATE TABLE IF NOT EXISTS `metadata` (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "key TEXT NOT NULL UNIQUE, " +
+                "longvalue LONG NOT NULL)";
+        try (Connection connection = connectionFactory.getConnection();
+             Statement stmt = connection.createStatement()) {
+            stmt.execute(createTableSQL);
+        }
     }
 
     @Override
-    public void putLongMetaData(PutMetadataParam param) {
-        PropertyFileUtils.put(param.key(), param.value(), getMetadataFile(param.repositoryFolder()));
+    public Long getLongMetaData(String key) throws SQLException {
+        String querySQL = "SELECT longvalue FROM metadata WHERE key = ?";
+        try (Connection connection = connectionFactory.getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(querySQL)) {
+            pstmt.setString(1, key);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getLong("longvalue");
+            }
+        }
+        return 0L;
     }
 
-    private File getMetadataFile(File repositoryFolder) {
-        return new File(repositoryFolder, "metadata.properties");
+    @Override
+    public void putLongMetaData(String key, Long value) throws SQLException {
+        String insertOrUpdateSQL = "INSERT OR REPLACE INTO metadata (key, longvalue) VALUES (?, ?)";
+        try (Connection connection = connectionFactory.getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(insertOrUpdateSQL)) {
+            pstmt.setString(1, key);
+            pstmt.setLong(2, value);
+            pstmt.executeUpdate();
+        }
     }
 }

@@ -5,7 +5,6 @@ import com.jetbrains.fileindexing.config.FactoryContainer;
 import com.jetbrains.fileindexing.facade.IndexingFacade;
 import com.jetbrains.fileindexing.search.SearchStrategy;
 import com.jetbrains.fileindexing.service.FileSystemListener;
-import com.jetbrains.fileindexing.service.IndexService;
 import com.jetbrains.fileindexing.utils.SearchNotReadyException;
 import com.jetbrains.fileindexing.utils.Status;
 import lombok.Builder;
@@ -20,9 +19,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public class FileSearch {
     private final Config config;
-    private final IndexingFacade indexingFacade = FactoryContainer.instance().indexingFacade();
-    private final FileSystemListener fileSystemListener = FactoryContainer.instance().fileSystemListener();
-    private volatile AtomicReference<Status> status = new AtomicReference<>(Status.INDEXING);
+    private final IndexingFacade indexingFacade = FactoryContainer.beansAbstractFactory().indexingFacade();
+    private final FileSystemListener fileSystemListener = FactoryContainer.beansAbstractFactory().fileSystemListener();
+    private final AtomicReference<Status> status = new AtomicReference<>(Status.INDEXING);
 
     @Builder
     private FileSearch(Config config) {
@@ -32,7 +31,7 @@ public class FileSearch {
     }
 
     public List<File> search(String term) {
-        if (Objects.equals(status, Status.INDEXING)) {
+        if (Objects.equals(status.get(), Status.INDEXING)) {
             throw new SearchNotReadyException();
         }
         return indexingFacade.search(term, config.getSearchStrategy());
@@ -51,7 +50,7 @@ public class FileSearch {
         fileSystemListener.listenFilesChanges(config.getWatchingFolders(),
                 file -> indexingFacade.putIndex(file, searchStrategy),
                 file -> indexingFacade.removeIndex(file, searchStrategy));
-        System.out.printf("");
+        System.out.println("");
     }
 }
 
