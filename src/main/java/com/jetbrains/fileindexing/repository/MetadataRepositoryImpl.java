@@ -1,16 +1,15 @@
 package com.jetbrains.fileindexing.repository;
 
 import com.jetbrains.fileindexing.factory.ConnectionFactory;
-import lombok.SneakyThrows;
 
 import java.sql.*;
+import java.util.Optional;
 
 public class MetadataRepositoryImpl implements MetadataRepository {
 
     private final ConnectionFactory connectionFactory;
 
-    @SneakyThrows
-    public MetadataRepositoryImpl(String dbFilePath) {
+    public MetadataRepositoryImpl(String dbFilePath) throws SQLException {
         connectionFactory = ConnectionFactory.getInstance(dbFilePath);
         initializeDatabase();
     }
@@ -27,17 +26,17 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Long getLongMetaData(String key) throws SQLException {
+    public Optional<Long> getLongMetaData(String key) throws SQLException {
         String querySQL = "SELECT longvalue FROM metadata WHERE key = ?";
         try (Connection connection = connectionFactory.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(querySQL)) {
             pstmt.setString(1, key);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                return rs.getLong("longvalue");
+                return Optional.of(rs.getLong("longvalue"));
             }
         }
-        return 0L;
+        return Optional.empty();
     }
 
     @Override

@@ -9,7 +9,9 @@ import com.jetbrains.fileindexing.repository.MetadataRepositoryImpl;
 import com.jetbrains.fileindexing.search.Indexing;
 import com.jetbrains.fileindexing.search.IndexingImpl;
 import com.jetbrains.fileindexing.service.*;
+import com.jetbrains.fileindexing.utils.DatabaseCrashedException;
 
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -104,10 +106,18 @@ public class BeansAbstractFactoryImpl implements BeansAbstractFactory {
     }
 
     private MetadataRepository createMetadataRepository(String dbFilePath) {
-        return new MetadataRepositoryImpl(dbFilePath);
+        try {
+            return new MetadataRepositoryImpl(dbFilePath);
+        } catch (SQLException e) {
+            throw new DatabaseCrashedException(e);
+        }
     }
 
     private IndexRepository createIndexRepository(String dbFilePath) {
-        return new IndexRepositoryImpl(dbFilePath);
+        try {
+            return new IndexRepositoryImpl(dbFilePath);
+        } catch (SQLException e) {
+            throw new DatabaseCrashedException(e);
+        }
     }
 }

@@ -2,10 +2,13 @@ package com.jetbrains.fileindexing.service;
 
 import com.jetbrains.fileindexing.config.FactoryContainer;
 import com.jetbrains.fileindexing.repository.MetadataRepository;
-import lombok.SneakyThrows;
+import com.jetbrains.fileindexing.utils.DatabaseCrashedException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.sql.SQLException;
 
+@Slf4j
 public class MetaDataServiceImpl implements MetaDataService {
     private final MetadataRepository metadataRepository;
 
@@ -13,15 +16,23 @@ public class MetaDataServiceImpl implements MetaDataService {
         metadataRepository = FactoryContainer.beansAbstractFactory().metadataRepository(dbFilePath);
     }
 
-    @SneakyThrows //  todo throw custom service exception
     @Override
     public Long getLastUpdateTime(File dataFolder) {
-        return metadataRepository.getLongMetaData("LastUpdateTime");
+        try {
+            return metadataRepository.getLongMetaData("LastUpdateTime").orElse(0L);
+        } catch (SQLException e) {
+            log.error("", e);
+            throw new DatabaseCrashedException(e);
+        }
     }
 
     @Override
-    @SneakyThrows //  todo throw custom service exception
     public void updateLastTime(File dataFolder) {
-        metadataRepository.putLongMetaData("LastUpdateTime", System.currentTimeMillis());
+        try {
+            metadataRepository.putLongMetaData("LastUpdateTime", System.currentTimeMillis());
+        } catch (SQLException e) {
+            log.error("", e);
+            throw new DatabaseCrashedException(e);
+        }
     }
 }

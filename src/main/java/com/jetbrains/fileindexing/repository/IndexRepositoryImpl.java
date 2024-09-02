@@ -1,20 +1,16 @@
 package com.jetbrains.fileindexing.repository;
 
 import com.jetbrains.fileindexing.factory.ConnectionFactory;
-import lombok.SneakyThrows;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-//todo inject with lightweight, dbFilePath in class state, dbFilePath shouldn't be in each method param
-// may be this should be prototype, and IndexService should be injected as lightweight
 public class IndexRepositoryImpl implements IndexRepository {
 
     private final ConnectionFactory connectionFactory;
 
-    @SneakyThrows
-    public IndexRepositoryImpl(String dbFilePath) {
+    public IndexRepositoryImpl(String dbFilePath) throws SQLException {
         connectionFactory = ConnectionFactory.getInstance(dbFilePath);
         initializeDatabase();
     }

@@ -2,10 +2,13 @@ package com.jetbrains.fileindexing.service;
 
 import com.jetbrains.fileindexing.config.FactoryContainer;
 import com.jetbrains.fileindexing.repository.IndexRepository;
-import lombok.SneakyThrows;
+import com.jetbrains.fileindexing.utils.DatabaseCrashedException;
+import lombok.extern.slf4j.Slf4j;
 
+import java.sql.SQLException;
 import java.util.List;
 
+@Slf4j
 public class IndexServiceImpl implements IndexService {
 
     private final IndexRepository indexRepository;
@@ -14,21 +17,33 @@ public class IndexServiceImpl implements IndexService {
         indexRepository = FactoryContainer.beansAbstractFactory().indexRepository(dbFilePath);
     }
 
-    @SneakyThrows //  todo throw custom service exception
     @Override
     public List<String> search(String term) {
-        return indexRepository.search(term);
+        try {
+            return indexRepository.search(term);
+        } catch (SQLException e) {
+            log.error("", e);
+            throw new DatabaseCrashedException(e);
+        }
     }
 
-    @SneakyThrows //  todo throw custom service exception
     @Override
     public void putIndex(String key, String value) {
-        indexRepository.putIndex(key, value);
+        try {
+            indexRepository.putIndex(key, value);
+        } catch (SQLException e) {
+            log.error("", e);
+            throw new DatabaseCrashedException(e);
+        }
     }
 
-    @SneakyThrows //  todo throw custom service exception
     @Override
     public void removeIndex(String key) {
-        indexRepository.removeIndex(key);
+        try {
+            indexRepository.removeIndex(key);
+        } catch (SQLException e) {
+            log.error("", e);
+            throw new DatabaseCrashedException(e);
+        }
     }
 }
