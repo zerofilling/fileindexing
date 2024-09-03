@@ -85,4 +85,27 @@ public class FileSearchTest {
         result = fileSearch.search("interface");
         assertEquals(result.size(), 2);
     }
+
+    @Test
+    @Timeout(value = 5000)
+    void testCheckCreateFile() {
+        while (fileSearch.getStatus().equals(Status.INDEXING)) {
+            // wait for init indexes
+        }
+        List<File> result = fileSearch.search("interface");
+        assertEquals(result.size(), 3);
+        File filToCopy = new File(watchingFolder, "1/1.txt");
+        try {
+            FileUtils.copyFile(filToCopy, new File(filToCopy.getParentFile(), "1-copy.txt"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            Thread.sleep(20000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        result = fileSearch.search("interface");
+        assertEquals(result.size(), 4);
+    }
 }
