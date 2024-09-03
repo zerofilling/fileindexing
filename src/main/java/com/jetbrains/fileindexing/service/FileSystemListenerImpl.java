@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 @Slf4j
 public class FileSystemListenerImpl implements FileSystemListener {
@@ -70,18 +71,20 @@ public class FileSystemListenerImpl implements FileSystemListener {
                     StandardWatchEventKinds.ENTRY_MODIFY,
                     StandardWatchEventKinds.ENTRY_DELETE);
             log.info("Watching directory: " + dirPath);
-            Files.walk(dirPath)
-                    .filter(Files::isDirectory)
-                    .forEach(path -> {
-                        try {
-                            path.register(watchService,
-                                    StandardWatchEventKinds.ENTRY_CREATE,
-                                    StandardWatchEventKinds.ENTRY_MODIFY,
-                                    StandardWatchEventKinds.ENTRY_DELETE);
-                        } catch (IOException e) {
-                            log.error("Failed to register directory: " + path, e);
-                        }
-                    });
+
+            try (Stream<Path> paths = Files.walk(dirPath)) {
+                paths.filter(Files::isDirectory)
+                        .forEach(path -> {
+                            try {
+                                path.register(watchService,
+                                        StandardWatchEventKinds.ENTRY_CREATE,
+                                        StandardWatchEventKinds.ENTRY_MODIFY,
+                                        StandardWatchEventKinds.ENTRY_DELETE);
+                            } catch (IOException e) {
+                                log.error("Failed to register directory: " + path, e);
+                            }
+                        });
+            }
         } catch (IOException e) {
             log.error("Failed to register directory: '{}'", dirPath, e);
         }

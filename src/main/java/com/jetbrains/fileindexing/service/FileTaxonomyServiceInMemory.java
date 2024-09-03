@@ -7,10 +7,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class FileTaxonomyServiceInMemory implements FileTaxonomyService {
 
@@ -31,14 +33,16 @@ public class FileTaxonomyServiceInMemory implements FileTaxonomyService {
     @SneakyThrows
     @Override
     public void addFolder(File folder) {
-        Files.walk(folder.toPath()).forEach(path -> {
-            File file = path.toFile();
-            if(file.isDirectory()) {
-                getOrCreateNode(file);
-            } else {
-                addFile(file);
-            }
-        });
+        try (Stream<Path> paths = Files.walk(folder.toPath())) {
+            paths.forEach(path -> {
+                File file = path.toFile();
+                if(file.isDirectory()) {
+                    getOrCreateNode(file);
+                } else {
+                    addFile(file);
+                }
+            });
+        }
     }
 
     private Node getOrCreateNode(File file) {
