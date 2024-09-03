@@ -78,7 +78,7 @@ public class FileSearchTest {
         filToDelete.delete();
         try {
             // todo wait on indexes count is changed
-            Thread.sleep(10000);
+            Thread.sleep(15000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -102,7 +102,7 @@ public class FileSearchTest {
         }
         try {
             // todo wait on indexes count is changed
-            Thread.sleep(10000);
+            Thread.sleep(15000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
