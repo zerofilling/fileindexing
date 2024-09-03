@@ -1,6 +1,7 @@
 package com.jetbrains.fileindexing.service;
 
 import com.jetbrains.fileindexing.config.FactoryContainer;
+import com.jetbrains.fileindexing.lexer.Lexer;
 import com.jetbrains.fileindexing.repository.IndexRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,8 +12,8 @@ public class IndexServiceImpl implements IndexService {
 
     private final IndexRepository indexRepository;
 
-    public IndexServiceImpl() {
-        indexRepository = FactoryContainer.beansAbstractFactory().indexRepository();
+    public IndexServiceImpl(Lexer lexer) {
+        indexRepository = FactoryContainer.beansAbstractFactory().indexRepository(lexer);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.jetbrains.fileindexing.search;
 
+import com.jetbrains.fileindexing.lexer.Lexer;
+
 import java.util.List;
 
 /**
@@ -31,4 +33,6 @@ public interface SearchStrategy {
      * @param key the key of the entry to be removed
      */
     void removeIndex(String key);
+
+    Lexer lexer();
 }

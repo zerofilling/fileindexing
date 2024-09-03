@@ -2,6 +2,7 @@ package com.jetbrains.fileindexing.factory;
 
 import com.jetbrains.fileindexing.facade.IndexingFacade;
 import com.jetbrains.fileindexing.facade.IndexingFacadeImpl;
+import com.jetbrains.fileindexing.lexer.Lexer;
 import com.jetbrains.fileindexing.repository.IndexRepository;
 import com.jetbrains.fileindexing.repository.IndexRepositoryImpl;
 import com.jetbrains.fileindexing.search.Indexing;
@@ -33,14 +34,14 @@ public class BeansAbstractFactoryImpl implements BeansAbstractFactory {
     }
 
     @Override
-    public IndexService indexService() {
-        return new IndexServiceImpl();
+    public IndexService indexService(Lexer lexer) {
+        return new IndexServiceImpl(lexer);
     }
 
 
     @Override
-    public IndexRepository indexRepository() {
-        return new IndexRepositoryImpl();
+    public IndexRepository indexRepository(Lexer lexer) {
+        return new IndexRepositoryImpl(lexer);
     }
 
     @Override

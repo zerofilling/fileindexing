@@ -1,6 +1,7 @@
 package com.jetbrains.fileindexing.factory;
 
 import com.jetbrains.fileindexing.facade.IndexingFacade;
+import com.jetbrains.fileindexing.lexer.Lexer;
 import com.jetbrains.fileindexing.repository.IndexRepository;
 import com.jetbrains.fileindexing.search.Indexing;
 import com.jetbrains.fileindexing.service.FileSystemListener;
@@ -33,14 +34,14 @@ public interface BeansAbstractFactory {
      *
      * @return an instance of {@link IndexService}
      */
-    IndexService indexService();
+    IndexService indexService(Lexer lexer);
 
     /**
      * Creates and returns an instance of {@link IndexRepository} using the specified database file path.
      *
      * @return an instance of {@link IndexRepository}
      */
-    IndexRepository indexRepository();
+    IndexRepository indexRepository(Lexer lexer);
 
     /**
      * Creates and returns an instance of {@link FileTaxonomyService}.

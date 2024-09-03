@@ -1,6 +1,8 @@
 package com.jetbrains.fileindexing.search;
 
 import com.jetbrains.fileindexing.config.FactoryContainer;
+import com.jetbrains.fileindexing.lexer.DefaultLexer;
+import com.jetbrains.fileindexing.lexer.Lexer;
 import com.jetbrains.fileindexing.service.IndexService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,7 +14,7 @@ public class TextContainsSearchStrategy implements SearchStrategy {
     private final IndexService indexService;
 
     public TextContainsSearchStrategy() {
-        indexService = FactoryContainer.beansAbstractFactory().indexService();
+        indexService = FactoryContainer.beansAbstractFactory().indexService(lexer());
     }
 
     @Override
@@ -31,5 +33,10 @@ public class TextContainsSearchStrategy implements SearchStrategy {
     public void removeIndex(String key) {
         log.info("Remove index '{}'", key);
         indexService.removeIndex(key);
+    }
+
+    @Override
+    public Lexer lexer() {
+        return new DefaultLexer();
     }
 }
