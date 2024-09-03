@@ -13,10 +13,10 @@ public interface Indexing {
     /**
      * Indexes all files in the specified directories using the provided search strategy.
      *
-     * @param watchingFolder the list of directories to be indexed
+     * @param watchingFolders the list of directories to be indexed
      * @param searchStrategy the strategy to use for indexing and searching files
      */
-    void indexAll(List<File> watchingFolder, SearchStrategy searchStrategy);
+    void indexAll(List<File> watchingFolders, SearchStrategy searchStrategy);
 
     /**
      * Indexes the specified file using the provided search strategy.
