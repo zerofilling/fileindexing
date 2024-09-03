@@ -8,8 +8,11 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * The {@code TextFileFinder} class provides utility methods for finding and processing text files
@@ -23,11 +26,18 @@ public final class TextFileFinder {
      * action to each file.
      *
      * @param lastUpdatedTime the timestamp of the last update
-     * @param files           the list of files and directories to search
+     * @param watchingFolders the list of watchingFolders and directories to search
      * @param consume         the consumer action to apply to each modified file
      */
-    public static void findTextModifiedFiles(Long lastUpdatedTime, List<File> files, Consumer<File> consume) {
-        FileVisitor.visitFiles(files.toArray(value -> new File[files.size()]), consume, file -> shouldIndex(lastUpdatedTime, file));
+    public static void findTextModifiedFiles(Long lastUpdatedTime, List<File> watchingFolders, Consumer<File> consume) {
+        watchingFolders.forEach(watchingFolder -> {
+            try (Stream<Path> paths = Files.walk(watchingFolder.toPath())) {
+                paths.map(Path::toFile).filter(File::isFile).filter(file -> shouldIndex(lastUpdatedTime, file))
+                        .forEach(consume);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /**

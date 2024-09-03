@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 public class IndexingImpl implements Indexing {
 
     @Override
-    public void indexAll(List<File> watchingFiles, SearchStrategy searchStrategy) {
+    public void indexAll(List<File> watchingFolders, SearchStrategy searchStrategy) {
         long lastUpdatedTime = searchStrategy.getIndexedTime();
-        TextFileFinder.findTextModifiedFiles(lastUpdatedTime, watchingFiles, file -> putIndex(file, searchStrategy));
+        TextFileFinder.findTextModifiedFiles(lastUpdatedTime, watchingFolders, file -> putIndex(file, searchStrategy));
     }
 
     @SneakyThrows
