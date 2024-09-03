@@ -44,10 +44,12 @@ public class FileSystemListenerImpl implements FileSystemListener {
                         Path filePath = dir.resolve(filename);
                         File file = filePath.toFile();
                         if (kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-                           if (file.isDirectory() && kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                            if (file.isFile()) {
+                                createdOrUpdate.accept(file);
+                            } else if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
                                 registerDirectory(filePath);
+                                createdOrUpdate.accept(file);
                             }
-                            createdOrUpdate.accept(file);
                         } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
                             deleted.accept(file);
                         }

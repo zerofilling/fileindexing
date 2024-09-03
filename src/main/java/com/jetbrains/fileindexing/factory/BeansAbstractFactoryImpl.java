@@ -19,7 +19,6 @@ public class BeansAbstractFactoryImpl implements BeansAbstractFactory {
 
     // Volatile fields for singleton-like instances
     private volatile Indexing indexing;
-    private volatile FileSystemListener fileSystemListener;
     private volatile IndexingFacade indexingFacade;
     private volatile FileTaxonomyService fileTaxonomyService;
 
@@ -43,14 +42,7 @@ public class BeansAbstractFactoryImpl implements BeansAbstractFactory {
 
     @Override
     public FileSystemListener fileSystemListener() {
-        if (fileSystemListener == null) {
-            synchronized (this) {
-                if (fileSystemListener == null) {
-                    fileSystemListener = new FileSystemListenerImpl();
-                }
-            }
-        }
-        return fileSystemListener;
+        return new FileSystemListenerImpl();
     }
 
     @Override
