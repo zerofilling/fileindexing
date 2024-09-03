@@ -65,16 +65,13 @@ public class FileSearch {
         log.info("Initializing file search...");
         status.set(Status.INDEXING);
         SearchStrategy searchStrategy = config.getSearchStrategy();
+        config.getSearchStrategy().cleanDb();
         CompletableFuture<Void> feature = indexingFacade.indexAll(config.getWatchingFolders(), searchStrategy);
         feature.whenComplete((unused, exception) -> {
             if (exception == null) {
                 status.set(Status.READY);
             } else {
-                if (exception instanceof DatabaseCrashedException) {
-                    reIndexFromScratch();
-                } else {
-                    status.set(Status.FAILED);
-                }
+                status.set(Status.FAILED);
             }
             log.info("Index initialization completed, status: '{}'", status.get());
         });
