@@ -5,7 +5,6 @@ import com.jetbrains.fileindexing.config.FactoryContainer;
 import com.jetbrains.fileindexing.facade.IndexingFacade;
 import com.jetbrains.fileindexing.search.SearchStrategy;
 import com.jetbrains.fileindexing.service.FileSystemListener;
-import com.jetbrains.fileindexing.utils.DatabaseCrashedException;
 import com.jetbrains.fileindexing.utils.SearchNotReadyException;
 import com.jetbrains.fileindexing.utils.Status;
 import lombok.Builder;
@@ -65,7 +64,6 @@ public class FileSearch {
         log.info("Initializing file search...");
         status.set(Status.INDEXING);
         SearchStrategy searchStrategy = config.getSearchStrategy();
-        config.getSearchStrategy().cleanDb();
         CompletableFuture<Void> feature = indexingFacade.indexAll(config.getWatchingFolders(), searchStrategy);
         feature.whenComplete((unused, exception) -> {
             if (exception == null) {
@@ -76,34 +74,11 @@ public class FileSearch {
             log.info("Index initialization completed, status: '{}'", status.get());
         });
         fileSystemListener.listenFilesChanges(config.getWatchingFolders(),
-                file -> {
-                    try {
-                        indexingFacade.putIndex(file, searchStrategy);
-                    } catch (DatabaseCrashedException e) {
-                        reIndexFromScratch();
-                    }
-                },
-                file -> {
-                    try {
-                        indexingFacade.removeIndex(file, searchStrategy);
-                    } catch (DatabaseCrashedException e) {
-                        reIndexFromScratch();
-                    }
-                });
+                file -> indexingFacade.putIndex(file, searchStrategy),
+                file -> indexingFacade.removeIndex(file, searchStrategy));
     }
 
     public Status getStatus() {
         return status.get();
-    }
-
-    /**
-     * Re-indexes all files from scratch by cleaning the database and reinitializing the indexing process.
-     * This method is called if the database crashes during the indexing process.
-     */
-    private void reIndexFromScratch() {
-        status.set(Status.INDEXING);
-        log.info("Start reindexing process");
-        config.getSearchStrategy().cleanDb();
-        CompletableFuture.runAsync(this::initialize);
     }
 }

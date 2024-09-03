@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -32,13 +31,11 @@ public class FileSearchTest {
         try {
             File dataDir = Files.createTempDirectory(UUID.randomUUID().toString()).toFile();
             dataDirs.add(dataDir);
-            File dataFolder = new File(dataDir, "data");
             watchingFolder = new File(dataDir, "watchingFolder");
             FileUtils.copyDirectory(new File("src/test/resources/testdata"), watchingFolder);
             fileSearch = FileSearch.builder().config(
                             Config.builder()
-                                    .searchStrategy(new TextContainsSearchStrategy(
-                                            dataFolder))
+                                    .searchStrategy(new TextContainsSearchStrategy())
                                     .watchingFolders(Lists.newArrayList(watchingFolder))
                                     .build())
                     .build();

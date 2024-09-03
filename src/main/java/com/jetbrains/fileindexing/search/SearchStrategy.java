@@ -31,21 +31,4 @@ public interface SearchStrategy {
      * @param key the key of the entry to be removed
      */
     void removeIndex(String key);
-
-    /**
-     * Retrieves the time when the index was last updated.
-     *
-     * @return the indexed time as a long value
-     */
-    long getIndexedTime();
-
-    /**
-     * Updates the indexed time to the current time.
-     */
-    void putIndexedTime();
-
-    /**
-     * Cleans the database, removing all indexed data.
-     */
-    void cleanDb();
 }
