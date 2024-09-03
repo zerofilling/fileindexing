@@ -25,14 +25,13 @@ public final class TextFileFinder {
      * Finds files that have been modified since the last update time and applies the specified consumer
      * action to each file.
      *
-     * @param lastUpdatedTime the timestamp of the last update
      * @param watchingFolders the list of watchingFolders and directories to search
      * @param consume         the consumer action to apply to each modified file
      */
-    public static void findTextModifiedFiles(Long lastUpdatedTime, List<File> watchingFolders, Consumer<File> consume) {
+    public static void findTextModifiedFiles(List<File> watchingFolders, Consumer<File> consume) {
         watchingFolders.forEach(watchingFolder -> {
             try (Stream<Path> paths = Files.walk(watchingFolder.toPath())) {
-                paths.map(Path::toFile).filter(File::isFile).filter(file -> shouldIndex(lastUpdatedTime, file))
+                paths.map(Path::toFile).filter(File::isFile).filter(TextFileFinder::shouldIndex)
                         .forEach(consume);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -43,23 +42,11 @@ public final class TextFileFinder {
     /**
      * Determines whether a file should be indexed based on its modification time and type.
      *
-     * @param lastUpdatedTime the timestamp of the last update
      * @param file            the file to check
      * @return {@code true} if the file should be indexed; {@code false} otherwise
      */
-    private static boolean shouldIndex(Long lastUpdatedTime, File file) {
-        return isFileChanged(lastUpdatedTime, file) && (file.isDirectory() || isTextFile(file));
-    }
-
-    /**
-     * Checks if a file has been modified since the last update time.
-     *
-     * @param lastUpdatedTime the timestamp of the last update
-     * @param file            the file to check
-     * @return {@code true} if the file has been modified; {@code false} otherwise
-     */
-    private static boolean isFileChanged(Long lastUpdatedTime, File file) {
-        return lastUpdatedTime < file.lastModified();
+    private static boolean shouldIndex(File file) {
+        return file.isDirectory() || isTextFile(file);
     }
 
     /**

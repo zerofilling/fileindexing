@@ -13,8 +13,7 @@ public class IndexingImpl implements Indexing {
 
     @Override
     public void indexAll(List<File> watchingFolders, SearchStrategy searchStrategy) {
-        long lastUpdatedTime = searchStrategy.getIndexedTime();
-        TextFileFinder.findTextModifiedFiles(lastUpdatedTime, watchingFolders, file -> putIndex(file, searchStrategy));
+        TextFileFinder.findTextModifiedFiles(watchingFolders, file -> putIndex(file, searchStrategy));
     }
 
     @SneakyThrows

@@ -15,8 +15,7 @@ public class Main {
     public static void main(String[] args) {
         FileSearch fileSearch = FileSearch.builder().config(
                         Config.builder()
-                                .searchStrategy(new TextContainsSearchStrategy(
-                                        new File("/Users/david/dev/fileindexing/.searchdata")))
+                                .searchStrategy(new TextContainsSearchStrategy())
                                 .watchingFolders(Lists.newArrayList(new File("/Users/david/dev/fileindexing/src/test/resources")))
                                 .build())
                 .build();
