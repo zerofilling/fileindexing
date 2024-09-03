@@ -22,16 +22,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FileSearchTest {
 
-    private static final List<File> dataDirs = new ArrayList<>();
+    private static final List<File> watchingFolders = new ArrayList<>();
     private FileSearch fileSearch;
     private File watchingFolder;
 
     @BeforeEach
     void init() {
         try {
-            File dataDir = Files.createTempDirectory(UUID.randomUUID().toString()).toFile();
-            dataDirs.add(dataDir);
-            watchingFolder = new File(dataDir, "watchingFolder");
+            watchingFolder = Files.createTempDirectory(UUID.randomUUID().toString()).toFile();
+            watchingFolders.add(watchingFolder);
             FileUtils.copyDirectory(new File("src/test/resources/testdata"), watchingFolder);
             fileSearch = FileSearch.builder().config(
                             Config.builder()
@@ -46,9 +45,9 @@ public class FileSearchTest {
 
     @AfterAll
     static void destroy() {
-        dataDirs.forEach(dataDir -> {
+        watchingFolders.forEach(watchingFolder -> {
             try {
-                FileUtils.deleteDirectory(dataDir);
+                FileUtils.deleteDirectory(watchingFolder);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
