@@ -95,6 +95,10 @@ public class FileSearch {
                 });
     }
 
+    public Status getStatus() {
+        return status.get();
+    }
+
     /**
      * Re-indexes all files from scratch by cleaning the database and reinitializing the indexing process.
      * This method is called if the database crashes during the indexing process.

@@ -18,6 +18,7 @@ public class TextContainsSearchStrategy implements SearchStrategy {
     private final String dbFilePath;
 
     public TextContainsSearchStrategy(File dataFolder) {
+        dataFolder.mkdirs();
         this.dataFolder = dataFolder;
         this.dbFilePath = dataFolder + File.separator + "fileindex.db";
         DbInit.init(dbFilePath);
