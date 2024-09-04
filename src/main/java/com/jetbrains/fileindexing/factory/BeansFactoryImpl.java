@@ -11,7 +11,7 @@ import com.jetbrains.fileindexing.service.*;
 
 public class BeansFactoryImpl implements BeansAbstractFactory {
 
-    // Volatile fields for singleton-like instances
+    // fields for singleton-like instances
     private Indexing indexing;
     private IndexingFacade indexingFacade;
     private FileTaxonomyService fileTaxonomyService;
