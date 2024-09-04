@@ -3,7 +3,6 @@ package com.jetbrains.fileindexing.processor;
 import com.jetbrains.fileindexing.config.Config;
 import com.jetbrains.fileindexing.config.FactoryContainer;
 import com.jetbrains.fileindexing.facade.IndexingFacade;
-import com.jetbrains.fileindexing.search.SearchStrategy;
 import com.jetbrains.fileindexing.service.FileSystemListener;
 import com.jetbrains.fileindexing.utils.SearchNotReadyException;
 import com.jetbrains.fileindexing.utils.Status;
@@ -53,7 +52,7 @@ public class FileSearch {
         if (Objects.equals(status.get(), Status.INDEXING)) {
             throw new SearchNotReadyException();
         }
-        return indexingFacade.search(term, config.getSearchStrategy());
+        return indexingFacade.search(term);
     }
 
     /**
@@ -64,8 +63,7 @@ public class FileSearch {
         assert config != null;
         log.info("Initializing file search...");
         status.set(Status.INDEXING);
-        SearchStrategy searchStrategy = config.getSearchStrategy();
-        CompletableFuture<Void> feature = indexingFacade.indexAll(config.getWatchingFolders(), searchStrategy);
+        CompletableFuture<Void> feature = indexingFacade.indexAll(config.getWatchingFolders());
         feature.whenComplete((unused, exception) -> {
             if (exception == null) {
                 status.set(Status.READY);
@@ -75,8 +73,8 @@ public class FileSearch {
             log.info("Index initialization completed, status: '{}'", status.get());
         });
         fileSystemListener.listenFilesChanges(config.getWatchingFolders(),
-                file -> indexingFacade.putIndex(file, searchStrategy),
-                file -> indexingFacade.removeIndex(file, searchStrategy));
+                indexingFacade::putIndex,
+                indexingFacade::removeIndex);
     }
 
     public Status getStatus() {

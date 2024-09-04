@@ -24,7 +24,7 @@ public class IndexingFacadeImpl implements IndexingFacade {
     }
 
     @Override
-    public CompletableFuture<Void> indexAll(List<File> watchingFolders, SearchStrategy searchStrategy) {
+    public CompletableFuture<Void> indexAll(List<File> watchingFolders) {
         CompletableFuture<Void> addFoldersFuture = CompletableFuture.runAsync(() ->
                 watchingFolders.forEach(fileTaxonomyService::addFolder), executorService);
         CompletableFuture<Void> indexFuture = CompletableFuture.runAsync(() ->
@@ -33,10 +33,10 @@ public class IndexingFacadeImpl implements IndexingFacade {
     }
 
     @Override
-    public void putIndex(File file, SearchStrategy searchStrategy) {
+    public void putIndex(File file) {
         if (file.isDirectory()) {
             fileTaxonomyService.addFolder(file);
-            fileTaxonomyService.visitFiles(file, it -> indexing.putIndex(it));
+            fileTaxonomyService.visitFiles(file, indexing::putIndex);
         } else if (TextFileFinder.isTextFile(file)) {
             fileTaxonomyService.addFile(file);
             indexing.putIndex(file);
@@ -44,14 +44,14 @@ public class IndexingFacadeImpl implements IndexingFacade {
     }
 
     @Override
-    public void removeIndex(File file, SearchStrategy searchStrategy) {
+    public void removeIndex(File file) {
         indexing.removeIndex(file);
-        fileTaxonomyService.visitFiles(file, it -> indexing.removeIndex(it));
+        fileTaxonomyService.visitFiles(file, indexing::removeIndex);
         fileTaxonomyService.delete(file);
     }
 
     @Override
-    public List<File> search(String term, SearchStrategy searchStrategy) {
+    public List<File> search(String term) {
         return indexing.search(term);
     }
 }
