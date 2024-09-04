@@ -70,12 +70,7 @@ public class FileSystemListenerImpl implements FileSystemListener {
 
     private void registerDirectory(Path dirPath) {
         try {
-            dirPath.register(watchService,
-                    StandardWatchEventKinds.ENTRY_CREATE,
-                    StandardWatchEventKinds.ENTRY_MODIFY,
-                    StandardWatchEventKinds.ENTRY_DELETE);
             log.info("Watching directory: " + dirPath);
-
             try (Stream<Path> paths = Files.walk(dirPath)) {
                 paths.filter(Files::isDirectory)
                         .forEach(path -> {
