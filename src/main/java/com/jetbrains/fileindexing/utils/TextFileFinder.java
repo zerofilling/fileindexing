@@ -1,5 +1,7 @@
 package com.jetbrains.fileindexing.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.util.stream.Stream;
  * within a list of files and directories. It includes methods to determine if a file has been modified,
  * whether a file is a text file, and to recursively visit and process files that meet certain criteria.
  */
+@Slf4j
 public final class TextFileFinder {
 
     /**
@@ -46,7 +49,12 @@ public final class TextFileFinder {
      * @return {@code true} if the file should be indexed; {@code false} otherwise
      */
     private static boolean shouldIndex(final File file) {
-        return file.isDirectory() || isTextFile(file);
+        try {
+            return file.isDirectory() || isTextFile(file);
+        } catch (Exception e) {
+            log.error("Access denied. Could not read file or directory: {}", file);
+            return false;
+        }
     }
 
     /**
@@ -56,7 +64,12 @@ public final class TextFileFinder {
      * @return {@code true} if the file is a text file; {@code false} otherwise
      */
     public static boolean isTextFile(final File file) {
-        if (file.isDirectory()) {
+        try {
+            if (file.isDirectory()) {
+                return false;
+            }
+        } catch (SecurityException e) {
+            log.error("Access denied. Could not read file or directory: {}", file);
             return false;
         }
         try (final FileInputStream fis = new FileInputStream(file)) {

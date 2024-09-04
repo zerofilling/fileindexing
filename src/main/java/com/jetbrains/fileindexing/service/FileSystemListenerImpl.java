@@ -106,10 +106,14 @@ public class FileSystemListenerImpl implements FileSystemListener {
 
     private boolean shouldHandleFileChange(final File file, final List<File> watchingFiles) {
         for (final File watchingFile : watchingFiles) {
-            if (watchingFile.isDirectory() && file.toPath().startsWith(watchingFile.toPath())) {
-                return true;
-            } else if (file.equals(watchingFile)) {
-                return true;
+            try {
+                if (watchingFile.isDirectory() && file.toPath().startsWith(watchingFile.toPath())) {
+                    return true;
+                } else if (file.equals(watchingFile)) {
+                    return true;
+                }
+            } catch (SecurityException e) {
+                log.error("Access denied. Could not read file or directory: {}", file);
             }
         }
         return false;

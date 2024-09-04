@@ -5,6 +5,7 @@ import com.jetbrains.fileindexing.search.Indexing;
 import com.jetbrains.fileindexing.search.SearchStrategy;
 import com.jetbrains.fileindexing.service.FileTaxonomyService;
 import com.jetbrains.fileindexing.utils.TextFileFinder;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@Slf4j
 public class IndexingFacadeImpl implements IndexingFacade {
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
@@ -34,12 +36,16 @@ public class IndexingFacadeImpl implements IndexingFacade {
 
     @Override
     public void indexFile(final File file) {
-        if (file.isDirectory()) {
-            fileTaxonomyService.addFolder(file);
-            fileTaxonomyService.visitFiles(file, indexing::indexFile);
-        } else if (TextFileFinder.isTextFile(file)) {
-            fileTaxonomyService.addFile(file);
-            indexing.indexFile(file);
+        try {
+            if (file.isDirectory()) {
+                fileTaxonomyService.addFolder(file);
+                fileTaxonomyService.visitFiles(file, indexing::indexFile);
+            } else if (TextFileFinder.isTextFile(file)) {
+                fileTaxonomyService.addFile(file);
+                indexing.indexFile(file);
+            }
+        } catch(SecurityException e) {
+            log.error("Access denied. Could not read file or directory: {}", file);
         }
     }
 
