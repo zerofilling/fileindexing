@@ -7,25 +7,17 @@ import com.jetbrains.fileindexing.repository.IndexRepository;
 import com.jetbrains.fileindexing.repository.IndexRepositoryImpl;
 import com.jetbrains.fileindexing.search.Indexing;
 import com.jetbrains.fileindexing.search.IndexingImpl;
+import com.jetbrains.fileindexing.search.SearchStrategy;
 import com.jetbrains.fileindexing.service.*;
 
 public class BeansFactoryImpl implements BeansAbstractFactory {
 
     // fields for singleton-like instances
-    private Indexing indexing;
-    private IndexingFacade indexingFacade;
     private FileTaxonomyService fileTaxonomyService;
 
     @Override
-    public Indexing indexing() {
-        if (indexing == null) {
-            synchronized (this) {
-                if (indexing == null) {
-                    indexing = new IndexingImpl();
-                }
-            }
-        }
-        return indexing;
+    public Indexing indexing(SearchStrategy searchStrategy) {
+        return new IndexingImpl(searchStrategy);
     }
 
     @Override
@@ -57,14 +49,7 @@ public class BeansFactoryImpl implements BeansAbstractFactory {
     }
 
     @Override
-    public IndexingFacade indexingFacade() {
-        if (indexingFacade == null) {
-            synchronized (this) {
-                if (indexingFacade == null) {
-                    indexingFacade = new IndexingFacadeImpl();
-                }
-            }
-        }
-        return indexingFacade;
+    public IndexingFacade indexingFacade(SearchStrategy searchStrategy) {
+        return new IndexingFacadeImpl(searchStrategy);
     }
 }

@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class FileSearch {
 
     private final Config config;
-    private final IndexingFacade indexingFacade = FactoryContainer.beansAbstractFactory().indexingFacade();
+    private final IndexingFacade indexingFacade;
     private final FileSystemListener fileSystemListener = FactoryContainer.beansAbstractFactory().fileSystemListener();
     private final AtomicReference<Status> status = new AtomicReference<>(Status.INDEXING);
 
@@ -38,6 +38,7 @@ public class FileSearch {
     private FileSearch(Config config) {
         assert config != null;
         this.config = config;
+        indexingFacade = FactoryContainer.beansAbstractFactory().indexingFacade(config.getSearchStrategy());
         initialize();
     }
 

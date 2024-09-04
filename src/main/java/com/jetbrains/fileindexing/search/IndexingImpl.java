@@ -11,24 +11,31 @@ import java.util.stream.Collectors;
 
 public class IndexingImpl implements Indexing {
 
+    private final SearchStrategy searchStrategy;
+
+    public IndexingImpl(SearchStrategy searchStrategy) {
+        assert searchStrategy != null;
+        this.searchStrategy = searchStrategy;
+    }
+
     @Override
-    public void indexAll(List<File> watchingFolders, SearchStrategy searchStrategy) {
-        TextFileFinder.findTextModifiedFiles(watchingFolders, file -> putIndex(file, searchStrategy));
+    public void indexAll(List<File> watchingFolders) {
+        TextFileFinder.findTextModifiedFiles(watchingFolders, this::putIndex);
     }
 
     @SneakyThrows
     @Override
-    public void putIndex(File file, SearchStrategy searchStrategy) {
+    public void putIndex(File file) {
         searchStrategy.putIndex(file.getAbsolutePath(), FileUtils.readFileToString(file, StandardCharsets.UTF_8));
     }
 
     @Override
-    public void removeIndex(File file, SearchStrategy searchStrategy) {
+    public void removeIndex(File file) {
         searchStrategy.removeIndex(file.getAbsolutePath());
     }
 
     @Override
-    public List<File> search(String term, SearchStrategy searchStrategy) {
+    public List<File> search(String term) {
         return searchStrategy.search(term).stream().map(File::new).collect(Collectors.toList());
     }
 }

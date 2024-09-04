@@ -14,32 +14,28 @@ public interface Indexing {
      * Indexes all files in the specified directories using the provided search strategy.
      *
      * @param watchingFolders the list of directories to be indexed
-     * @param searchStrategy the strategy to use for indexing and searching files
      */
-    void indexAll(List<File> watchingFolders, SearchStrategy searchStrategy);
+    void indexAll(List<File> watchingFolders);
 
     /**
      * Indexes the specified file using the provided search strategy.
      *
      * @param file the file to be indexed
-     * @param searchStrategy the strategy to use for indexing the file
      */
-    void putIndex(File file, SearchStrategy searchStrategy);
+    void putIndex(File file);
 
     /**
      * Removes the specified file from the index using the provided search strategy.
      *
      * @param file the file to be removed from the index
-     * @param searchStrategy the strategy to use for removing the file from the index
      */
-    void removeIndex(File file, SearchStrategy searchStrategy);
+    void removeIndex(File file);
 
     /**
      * Searches for files that match the specified term using the provided search strategy.
      *
-     * @param term the term to search for
-     * @param searchStrategy the strategy to use for searching the indexed files
+     * @param term           the term to search for
      * @return a list of files that match the search term
      */
-    List<File> search(String term, SearchStrategy searchStrategy);
+    List<File> search(String term);
 }
