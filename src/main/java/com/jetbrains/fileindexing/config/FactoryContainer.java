@@ -1,7 +1,7 @@
 package com.jetbrains.fileindexing.config;
 
 import com.jetbrains.fileindexing.factory.BeansAbstractFactory;
-import com.jetbrains.fileindexing.factory.BeansAbstractFactoryImpl;
+import com.jetbrains.fileindexing.factory.BeansFactoryImpl;
 import lombok.Getter;
 
 /**
@@ -37,7 +37,7 @@ public final class FactoryContainer {
         if (beansAbstractFactory == null) {
             synchronized (FactoryContainer.class) {
                 if (beansAbstractFactory == null) {
-                    beansAbstractFactory = new BeansAbstractFactoryImpl();
+                    beansAbstractFactory = new BeansFactoryImpl();
                 }
             }
         }

@@ -9,12 +9,12 @@ import com.jetbrains.fileindexing.search.Indexing;
 import com.jetbrains.fileindexing.search.IndexingImpl;
 import com.jetbrains.fileindexing.service.*;
 
-public class BeansAbstractFactoryImpl implements BeansAbstractFactory {
+public class BeansFactoryImpl implements BeansAbstractFactory {
 
     // Volatile fields for singleton-like instances
-    private volatile Indexing indexing;
-    private volatile IndexingFacade indexingFacade;
-    private volatile FileTaxonomyService fileTaxonomyService;
+    private Indexing indexing;
+    private IndexingFacade indexingFacade;
+    private FileTaxonomyService fileTaxonomyService;
 
     @Override
     public Indexing indexing() {
