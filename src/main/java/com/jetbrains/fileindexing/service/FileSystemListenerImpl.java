@@ -29,6 +29,8 @@ public class FileSystemListenerImpl implements FileSystemListener {
         for (File file : watchingFiles) {
             if (file.isDirectory()) {
                 registerDirectory(file.toPath());
+            } else {
+                registerParentDirectoryForFile(file.toPath());
             }
         }
 
@@ -44,15 +46,17 @@ public class FileSystemListenerImpl implements FileSystemListener {
                         Path filename = ev.context();
                         Path filePath = dir.resolve(filename);
                         File file = filePath.toFile();
-                        if (kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-                            if (file.isFile()) {
-                                createdOrUpdate.accept(file);
-                            } else if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                                registerDirectory(filePath);
-                                createdOrUpdate.accept(file);
+                        if (shouldHandleFileChange(file, watchingFiles)) {
+                            if (kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_MODIFY) {
+                                if (file.isFile()) {
+                                    createdOrUpdate.accept(file);
+                                } else if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                                    registerDirectory(filePath);
+                                    createdOrUpdate.accept(file);
+                                }
+                            } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
+                                deleted.accept(file);
                             }
-                        } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-                            deleted.accept(file);
                         }
                     }
                     key.reset();
@@ -88,5 +92,31 @@ public class FileSystemListenerImpl implements FileSystemListener {
         } catch (IOException e) {
             log.error("Failed to register directory: '{}'", dirPath, e);
         }
+    }
+
+    private void registerParentDirectoryForFile(Path filePath) {
+        try {
+            Path parentDir = filePath.getParent();
+            if (parentDir != null) {
+                parentDir.register(watchService,
+                        StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.ENTRY_MODIFY,
+                        StandardWatchEventKinds.ENTRY_DELETE);
+                log.info("Watching file: " + filePath);
+            }
+        } catch (IOException e) {
+            log.error("Failed to register file: '{}'", filePath, e);
+        }
+    }
+
+    private boolean shouldHandleFileChange(File file, List<File> watchingFiles) {
+        for (File watchingFile : watchingFiles) {
+            if (watchingFile.isDirectory() && file.toPath().startsWith(watchingFile.toPath())) {
+                return true;
+            } else if (file.equals(watchingFile)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
