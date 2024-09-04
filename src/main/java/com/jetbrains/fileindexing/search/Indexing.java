@@ -22,7 +22,7 @@ public interface Indexing {
      *
      * @param file the file to be indexed
      */
-    void putIndex(File file);
+    void indexFile(File file);
 
     /**
      * Removes the specified file from the index using the provided search strategy.

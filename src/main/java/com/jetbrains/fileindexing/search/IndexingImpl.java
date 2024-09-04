@@ -20,12 +20,12 @@ public class IndexingImpl implements Indexing {
 
     @Override
     public void indexAll(List<File> watchingFolders) {
-        TextFileFinder.findTextModifiedFiles(watchingFolders, this::putIndex);
+        TextFileFinder.findTextModifiedFiles(watchingFolders, this::indexFile);
     }
 
     @SneakyThrows
     @Override
-    public void putIndex(File file) {
+    public void indexFile(File file) {
         searchStrategy.putIndex(file.getAbsolutePath(), FileUtils.readFileToString(file, StandardCharsets.UTF_8));
     }
 

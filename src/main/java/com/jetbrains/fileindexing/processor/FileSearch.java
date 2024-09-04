@@ -73,7 +73,7 @@ public class FileSearch {
             log.info("Index initialization completed, status: '{}'", status.get());
         });
         fileSystemListener.listenFilesChanges(config.getWatchingFolders(),
-                indexingFacade::putIndex,
+                indexingFacade::indexFile,
                 indexingFacade::removeIndex);
     }
 

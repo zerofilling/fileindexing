@@ -33,13 +33,13 @@ public class IndexingFacadeImpl implements IndexingFacade {
     }
 
     @Override
-    public void putIndex(File file) {
+    public void indexFile(File file) {
         if (file.isDirectory()) {
             fileTaxonomyService.addFolder(file);
-            fileTaxonomyService.visitFiles(file, indexing::putIndex);
+            fileTaxonomyService.visitFiles(file, indexing::indexFile);
         } else if (TextFileFinder.isTextFile(file)) {
             fileTaxonomyService.addFile(file);
-            indexing.putIndex(file);
+            indexing.indexFile(file);
         }
     }
 
