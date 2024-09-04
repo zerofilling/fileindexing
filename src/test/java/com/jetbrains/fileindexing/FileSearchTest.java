@@ -88,15 +88,63 @@ public class FileSearchTest {
 
     @Test
     @Timeout(value = 5000)
+    void testCheckDeleteFolder() {
+        while (fileSearch.getStatus().equals(Status.INDEXING)) {
+            // wait for init indexes
+        }
+        List<File> result = fileSearch.search("interface");
+        assertEquals(result.size(), 3);
+        File deleteFolder = new File(watchingFolder, "1/3");
+        try {
+            FileUtils.deleteDirectory(deleteFolder);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            // todo wait on indexes count is changed
+            Thread.sleep(15000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        result = fileSearch.search("interface");
+        assertEquals(result.size(), 2);
+    }
+
+    @Test
+    @Timeout(value = 5000)
     void testCheckCreateFile() {
         while (fileSearch.getStatus().equals(Status.INDEXING)) {
             // wait for init indexes
         }
         List<File> result = fileSearch.search("interface");
         assertEquals(result.size(), 3);
-        File filToCopy = new File(watchingFolder, "1/1.txt");
+        File fileToCopy = new File(watchingFolder, "1/1.txt");
         try {
-            FileUtils.copyFile(filToCopy, new File(filToCopy.getParentFile(), "1-copy.txt"));
+            FileUtils.copyFile(fileToCopy, new File(fileToCopy.getParentFile(), "1-copy.txt"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            // todo wait on indexes count is changed
+            Thread.sleep(15000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        result = fileSearch.search("interface");
+        assertEquals(result.size(), 4);
+    }
+
+    @Test
+    @Timeout(value = 5000)
+    void testCheckCreateFolder() {
+        while (fileSearch.getStatus().equals(Status.INDEXING)) {
+            // wait for init indexes
+        }
+        List<File> result = fileSearch.search("interface");
+        assertEquals(result.size(), 3);
+        File folderToCopy = new File(watchingFolder, "1/3");
+        try {
+            FileUtils.copyDirectory(folderToCopy, new File(folderToCopy.getParentFile(), "1/4"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
