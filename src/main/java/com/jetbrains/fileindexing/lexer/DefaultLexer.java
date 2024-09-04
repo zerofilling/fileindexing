@@ -25,7 +25,7 @@ public class DefaultLexer implements Lexer {
      * @return a list of tokens extracted from the text, with each token in lowercase
      */
     @Override
-    public List<String> tokenize(String text) {
+    public List<String> tokenize(final String text) {
         return Arrays.stream(text.split("\\s+"))
                 .map(String::toLowerCase)
                 .collect(Collectors.toList());

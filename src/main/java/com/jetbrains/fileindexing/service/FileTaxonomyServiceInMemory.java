@@ -19,21 +19,21 @@ public class FileTaxonomyServiceInMemory implements FileTaxonomyService {
     private final Map<String, Node> nodes = new ConcurrentHashMap<>();
 
     @Override
-    public void addFile(File file) {
-        Node parentNode = getOrCreateNode(file.getParentFile());
+    public void addFile(final File file) {
+        final Node parentNode = getOrCreateNode(file.getParentFile());
         parentNode.getChildren().put(file.getName(), new Node(false, null, file.getName(), parentNode));
     }
 
     @Override
-    public void delete(File file) {
-        Node parentNode = getOrCreateNode(file.getParentFile());
+    public void delete(final File file) {
+        final Node parentNode = getOrCreateNode(file.getParentFile());
         parentNode.getChildren().remove(file.getName());
     }
 
     @SneakyThrows
     @Override
-    public void addFolder(File folder) {
-        try (Stream<Path> paths = Files.walk(folder.toPath())) {
+    public void addFolder(final File folder) {
+        try (final Stream<Path> paths = Files.walk(folder.toPath())) {
             paths.forEach(path -> {
                 File file = path.toFile();
                 if(file.isDirectory()) {
@@ -45,8 +45,8 @@ public class FileTaxonomyServiceInMemory implements FileTaxonomyService {
         }
     }
 
-    private Node getOrCreateNode(File file) {
-        String[] folderNames = file.getAbsolutePath().split(Pattern.quote(File.separator));
+    private Node getOrCreateNode(final File file) {
+        final String[] folderNames = file.getAbsolutePath().split(Pattern.quote(File.separator));
         Node currentNode = null;
         for (String folderName : folderNames) {
             if (StringUtils.isNotBlank(folderName)) {
@@ -60,8 +60,8 @@ public class FileTaxonomyServiceInMemory implements FileTaxonomyService {
     }
 
     @Override
-    public void visitFiles(File folder, Consumer<File> childFile) {
-        String[] folderNames = folder.getAbsolutePath().split(Pattern.quote(File.separator));
+    public void visitFiles(final File folder, final Consumer<File> childFile) {
+        final String[] folderNames = folder.getAbsolutePath().split(Pattern.quote(File.separator));
         Map<String, Node> children = nodes;
         Node node = null;
         for (String folderName : folderNames) {
@@ -79,7 +79,7 @@ public class FileTaxonomyServiceInMemory implements FileTaxonomyService {
         }
     }
 
-    private void visitChildNodes(Node node, Consumer<File> childFile) {
+    private void visitChildNodes(final Node node, final Consumer<File> childFile) {
         node.getChildren().forEach((key, child) -> {
             if (child.isDirectory()) {
                 visitChildNodes(child, childFile);

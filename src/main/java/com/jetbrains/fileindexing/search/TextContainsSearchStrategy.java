@@ -18,19 +18,19 @@ public class TextContainsSearchStrategy implements SearchStrategy {
     }
 
     @Override
-    public void putIndex(String key, String value) {
+    public void putIndex(final String key, final String value) {
         log.info("Put index '{}'", key);
         indexService.putIndex(key, value);
     }
 
     @Override
-    public List<String> search(String term) {
+    public List<String> search(final String term) {
         log.info("Search index, term: '{}'", term);
         return indexService.search(term);
     }
 
     @Override
-    public void removeIndex(String key) {
+    public void removeIndex(final String key) {
         log.info("Remove index '{}'", key);
         indexService.removeIndex(key);
     }

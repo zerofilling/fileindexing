@@ -12,22 +12,22 @@ public class IndexServiceImpl implements IndexService {
 
     private final IndexRepository indexRepository;
 
-    public IndexServiceImpl(Lexer lexer) {
+    public IndexServiceImpl(final Lexer lexer) {
         indexRepository = FactoryContainer.beansAbstractFactory().indexRepository(lexer);
     }
 
     @Override
-    public List<String> search(String term) {
+    public List<String> search(final String term) {
         return indexRepository.search(term);
     }
 
     @Override
-    public void putIndex(String key, String value) {
+    public void putIndex(final String key, final String value) {
         indexRepository.putIndex(key, value);
     }
 
     @Override
-    public void removeIndex(String key) {
+    public void removeIndex(final String key) {
         indexRepository.removeIndex(key);
     }
 }

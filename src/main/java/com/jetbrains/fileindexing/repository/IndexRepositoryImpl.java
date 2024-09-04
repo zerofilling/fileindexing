@@ -12,14 +12,14 @@ public class IndexRepositoryImpl implements IndexRepository {
     private final Map<String, String> indexStore;
     private final Lexer lexer;
 
-    public IndexRepositoryImpl(Lexer lexer) {
+    public IndexRepositoryImpl(final Lexer lexer) {
         this.lexer = lexer;
         this.indexStore = new ConcurrentHashMap<>();
     }
 
     @Override
-    public List<String> search(String term) {
-        List<String> searchTokens = lexer.tokenize(term.toLowerCase());
+    public List<String> search(final String term) {
+        final List<String> searchTokens = lexer.tokenize(term.toLowerCase());
         return indexStore.entrySet().stream()
                 .filter(entry -> {
                     List<String> indexedTokens = lexer.tokenize(entry.getValue().toLowerCase());
@@ -30,12 +30,12 @@ public class IndexRepositoryImpl implements IndexRepository {
                 .collect(Collectors.toList());
     }
 
-    private boolean containsPhrase(List<String> indexedTokens, List<String> searchTokens) {
+    private boolean containsPhrase(final List<String> indexedTokens, final List<String> searchTokens) {
         if (searchTokens.isEmpty()) {
             return false;
         }
 
-        int searchSize = searchTokens.size();
+        final int searchSize = searchTokens.size();
         for (int i = 0; i <= indexedTokens.size() - searchSize; i++) {
             if (indexedTokens.subList(i, i + searchSize).equals(searchTokens)) {
                 return true;
@@ -45,12 +45,12 @@ public class IndexRepositoryImpl implements IndexRepository {
     }
 
     @Override
-    public void putIndex(String key, String value) {
+    public void putIndex(final String key, final String value) {
         indexStore.put(key, value);
     }
 
     @Override
-    public void removeIndex(String key) {
+    public void removeIndex(final String key) {
         indexStore.remove(key);
     }
 }

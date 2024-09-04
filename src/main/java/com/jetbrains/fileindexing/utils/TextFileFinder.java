@@ -28,9 +28,9 @@ public final class TextFileFinder {
      * @param watchingFolders the list of watchingFolders and directories to search
      * @param consume         the consumer action to apply to each modified file
      */
-    public static void findTextModifiedFiles(List<File> watchingFolders, Consumer<File> consume) {
+    public static void findTextModifiedFiles(final List<File> watchingFolders, final Consumer<File> consume) {
         watchingFolders.forEach(watchingFolder -> {
-            try (Stream<Path> paths = Files.walk(watchingFolder.toPath())) {
+            try (final Stream<Path> paths = Files.walk(watchingFolder.toPath())) {
                 paths.map(Path::toFile).filter(File::isFile).filter(TextFileFinder::shouldIndex)
                         .forEach(consume);
             } catch (IOException e) {
@@ -45,7 +45,7 @@ public final class TextFileFinder {
      * @param file            the file to check
      * @return {@code true} if the file should be indexed; {@code false} otherwise
      */
-    private static boolean shouldIndex(File file) {
+    private static boolean shouldIndex(final File file) {
         return file.isDirectory() || isTextFile(file);
     }
 
@@ -55,17 +55,17 @@ public final class TextFileFinder {
      * @param file the file to check
      * @return {@code true} if the file is a text file; {@code false} otherwise
      */
-    public static boolean isTextFile(File file) {
+    public static boolean isTextFile(final File file) {
         if (file.isDirectory()) {
             return false;
         }
-        try (FileInputStream fis = new FileInputStream(file)) {
-            byte[] buffer = new byte[1000];
-            int readBytes = fis.read(buffer);
+        try (final FileInputStream fis = new FileInputStream(file)) {
+            final byte[] buffer = new byte[1000];
+            final int readBytes = fis.read(buffer);
             if (readBytes == -1) {
                 return false;
             }
-            byte[] data = new byte[readBytes];
+            final byte[] data = new byte[readBytes];
             System.arraycopy(buffer, 0, data, 0, readBytes);
             return isValidUTF8(data);
         } catch (IOException e) {
@@ -79,8 +79,8 @@ public final class TextFileFinder {
      * @param bytes the byte array to check
      * @return {@code true} if the byte array is valid UTF-8; {@code false} otherwise
      */
-    private static boolean isValidUTF8(byte[] bytes) {
-        CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
+    private static boolean isValidUTF8(final byte[] bytes) {
+        final CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
         decoder.onMalformedInput(CodingErrorAction.REPORT);
         decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
         try {

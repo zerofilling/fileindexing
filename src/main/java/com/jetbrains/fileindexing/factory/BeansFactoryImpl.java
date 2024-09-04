@@ -16,7 +16,7 @@ public class BeansFactoryImpl implements BeansAbstractFactory {
     private FileTaxonomyService fileTaxonomyService;
 
     @Override
-    public Indexing indexing(SearchStrategy searchStrategy) {
+    public Indexing indexing(final SearchStrategy searchStrategy) {
         return new IndexingImpl(searchStrategy);
     }
 
@@ -26,13 +26,13 @@ public class BeansFactoryImpl implements BeansAbstractFactory {
     }
 
     @Override
-    public IndexService indexService(Lexer lexer) {
+    public IndexService indexService(final Lexer lexer) {
         return new IndexServiceImpl(lexer);
     }
 
 
     @Override
-    public IndexRepository indexRepository(Lexer lexer) {
+    public IndexRepository indexRepository(final Lexer lexer) {
         return new IndexRepositoryImpl(lexer);
     }
 
@@ -49,7 +49,7 @@ public class BeansFactoryImpl implements BeansAbstractFactory {
     }
 
     @Override
-    public IndexingFacade indexingFacade(SearchStrategy searchStrategy) {
+    public IndexingFacade indexingFacade(final SearchStrategy searchStrategy) {
         return new IndexingFacadeImpl(searchStrategy);
     }
 }

@@ -34,7 +34,7 @@ public class FileSearch {
      * @param config the configuration to be used for indexing and searching files
      */
     @Builder
-    private FileSearch(Config config) {
+    private FileSearch(final Config config) {
         assert config != null;
         this.config = config;
         indexingFacade = FactoryContainer.beansAbstractFactory().indexingFacade(config.getSearchStrategy());
@@ -63,7 +63,7 @@ public class FileSearch {
         assert config != null;
         log.info("Initializing file search...");
         status.set(Status.INDEXING);
-        CompletableFuture<Void> feature = indexingFacade.indexAll(config.getWatchingFolders());
+        final CompletableFuture<Void> feature = indexingFacade.indexAll(config.getWatchingFolders());
         feature.whenComplete((unused, exception) -> {
             if (exception == null) {
                 status.set(Status.READY);

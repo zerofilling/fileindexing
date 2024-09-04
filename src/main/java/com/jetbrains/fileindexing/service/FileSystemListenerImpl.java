@@ -25,8 +25,8 @@ public class FileSystemListenerImpl implements FileSystemListener {
     }
 
     @Override
-    public void listenFilesChanges(List<File> watchingFiles, Consumer<File> createdOrUpdate, Consumer<File> deleted) {
-        for (File file : watchingFiles) {
+    public void listenFilesChanges(final List<File> watchingFiles, final Consumer<File> createdOrUpdate, final Consumer<File> deleted) {
+        for (final File file : watchingFiles) {
             if (file.isDirectory()) {
                 registerDirectory(file.toPath());
             } else {
@@ -37,15 +37,15 @@ public class FileSystemListenerImpl implements FileSystemListener {
         CompletableFuture.runAsync(() -> {
             while (true) {
                 try {
-                    WatchKey key = watchService.take();
-                    Path dir = (Path) key.watchable();
+                    final WatchKey key = watchService.take();
+                    final Path dir = (Path) key.watchable();
                     for (WatchEvent<?> event : key.pollEvents()) {
-                        WatchEvent.Kind<?> kind = event.kind();
+                        final WatchEvent.Kind<?> kind = event.kind();
                         @SuppressWarnings("unchecked")
-                        WatchEvent<Path> ev = (WatchEvent<Path>) event;
-                        Path filename = ev.context();
-                        Path filePath = dir.resolve(filename);
-                        File file = filePath.toFile();
+                        final WatchEvent<Path> ev = (WatchEvent<Path>) event;
+                        final Path filename = ev.context();
+                        final Path filePath = dir.resolve(filename);
+                        final File file = filePath.toFile();
                         if (shouldHandleFileChange(file, watchingFiles)) {
                             if (kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_MODIFY) {
                                 if (file.isFile()) {
@@ -68,10 +68,10 @@ public class FileSystemListenerImpl implements FileSystemListener {
         }, executorService);
     }
 
-    private void registerDirectory(Path dirPath) {
+    private void registerDirectory(final Path dirPath) {
         try {
             log.info("Watching directory: " + dirPath);
-            try (Stream<Path> paths = Files.walk(dirPath)) {
+            try (final Stream<Path> paths = Files.walk(dirPath)) {
                 paths.filter(Files::isDirectory)
                         .forEach(path -> {
                             try {
@@ -89,9 +89,9 @@ public class FileSystemListenerImpl implements FileSystemListener {
         }
     }
 
-    private void registerParentDirectoryForFile(Path filePath) {
+    private void registerParentDirectoryForFile(final Path filePath) {
         try {
-            Path parentDir = filePath.getParent();
+            final Path parentDir = filePath.getParent();
             if (parentDir != null) {
                 parentDir.register(watchService,
                         StandardWatchEventKinds.ENTRY_CREATE,
@@ -104,8 +104,8 @@ public class FileSystemListenerImpl implements FileSystemListener {
         }
     }
 
-    private boolean shouldHandleFileChange(File file, List<File> watchingFiles) {
-        for (File watchingFile : watchingFiles) {
+    private boolean shouldHandleFileChange(final File file, final List<File> watchingFiles) {
+        for (final File watchingFile : watchingFiles) {
             if (watchingFile.isDirectory() && file.toPath().startsWith(watchingFile.toPath())) {
                 return true;
             } else if (file.equals(watchingFile)) {

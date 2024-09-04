@@ -19,21 +19,21 @@ public class IndexingFacadeImpl implements IndexingFacade {
     private final FileTaxonomyService fileTaxonomyService = FactoryContainer.beansAbstractFactory().fileTaxonomyService();
 
 
-    public IndexingFacadeImpl(SearchStrategy searchStrategy) {
+    public IndexingFacadeImpl(final SearchStrategy searchStrategy) {
         this.indexing = FactoryContainer.beansAbstractFactory().indexing(searchStrategy);
     }
 
     @Override
-    public CompletableFuture<Void> indexAll(List<File> watchingFolders) {
-        CompletableFuture<Void> addFoldersFuture = CompletableFuture.runAsync(() ->
+    public CompletableFuture<Void> indexAll(final List<File> watchingFolders) {
+        final CompletableFuture<Void> addFoldersFuture = CompletableFuture.runAsync(() ->
                 watchingFolders.forEach(fileTaxonomyService::addFolder), executorService);
-        CompletableFuture<Void> indexFuture = CompletableFuture.runAsync(() ->
+        final CompletableFuture<Void> indexFuture = CompletableFuture.runAsync(() ->
                 indexing.indexAll(watchingFolders), executorService);
         return CompletableFuture.allOf(addFoldersFuture, indexFuture);
     }
 
     @Override
-    public void indexFile(File file) {
+    public void indexFile(final File file) {
         if (file.isDirectory()) {
             fileTaxonomyService.addFolder(file);
             fileTaxonomyService.visitFiles(file, indexing::indexFile);
@@ -44,14 +44,14 @@ public class IndexingFacadeImpl implements IndexingFacade {
     }
 
     @Override
-    public void removeIndex(File file) {
+    public void removeIndex(final File file) {
         indexing.removeIndex(file);
         fileTaxonomyService.visitFiles(file, indexing::removeIndex);
         fileTaxonomyService.delete(file);
     }
 
     @Override
-    public List<File> search(String term) {
+    public List<File> search(final String term) {
         return indexing.search(term);
     }
 }
