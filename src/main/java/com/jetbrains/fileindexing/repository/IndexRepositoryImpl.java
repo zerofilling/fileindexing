@@ -10,13 +10,13 @@ public class IndexRepositoryImpl implements IndexRepository {
 
 
     // key, token, index
-    private final Map<String, Map<String, Set<Integer>>> tokenKeyIndex;
+    private final Map<String, Map<String, Set<Integer>>> keyTokenIndex;
 
     private final Lexer lexer;
 
     public IndexRepositoryImpl(final Lexer lexer) {
         this.lexer = lexer;
-        this.tokenKeyIndex = new ConcurrentHashMap<>();
+        this.keyTokenIndex = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -28,7 +28,7 @@ public class IndexRepositoryImpl implements IndexRepository {
         }
 
         final List<String> results = new ArrayList<>();
-        for (Map.Entry<String, Map<String, Set<Integer>>> entry : tokenKeyIndex.entrySet()) {
+        for (Map.Entry<String, Map<String, Set<Integer>>> entry : keyTokenIndex.entrySet()) {
             final String key = entry.getKey();
             final Map<String, Set<Integer>> tokenIndex = entry.getValue();
 
@@ -63,7 +63,7 @@ public class IndexRepositoryImpl implements IndexRepository {
     public void putIndex(final String key, final String value) {
         final List<String> tokens = lexer.tokenize(value.toLowerCase());
         LoopWithIndexConsumer.forEach(tokens, (token, index) -> {
-            final Map<String, Set<Integer>> indexKeyValkSetMap = tokenKeyIndex.computeIfAbsent(key, s -> new HashMap<>());
+            final Map<String, Set<Integer>> indexKeyValkSetMap = keyTokenIndex.computeIfAbsent(key, s -> new HashMap<>());
             indexKeyValkSetMap.computeIfAbsent(token, s -> new HashSet<>());
             indexKeyValkSetMap.get(token).add(index);
         });
@@ -71,6 +71,6 @@ public class IndexRepositoryImpl implements IndexRepository {
 
     @Override
     public void removeIndex(final String key) {
-        tokenKeyIndex.remove(key);
+        keyTokenIndex.remove(key);
     }
 }
