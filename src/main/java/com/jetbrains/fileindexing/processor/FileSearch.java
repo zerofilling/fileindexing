@@ -5,15 +5,11 @@ import com.jetbrains.fileindexing.config.FactoryContainer;
 import com.jetbrains.fileindexing.facade.IndexingFacade;
 import com.jetbrains.fileindexing.service.FileSystemListener;
 import com.jetbrains.fileindexing.utils.SearchNotReadyException;
-import com.jetbrains.fileindexing.utils.Status;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The {@code FileSearch} class is responsible for managing the indexing and searching of files
@@ -26,7 +22,6 @@ public class FileSearch {
     private final Config config;
     private final IndexingFacade indexingFacade;
     private final FileSystemListener fileSystemListener = FactoryContainer.beansAbstractFactory().fileSystemListener();
-    private final AtomicReference<Status> status = new AtomicReference<>(Status.INDEXING);
 
     /**
      * Constructs a {@code FileSearch} instance with the specified configuration.
@@ -49,9 +44,6 @@ public class FileSearch {
      * @throws SearchNotReadyException if the search is attempted while indexing is still in progress
      */
     public List<File> search(String term) {
-        if (Objects.equals(status.get(), Status.INDEXING)) {
-            throw new SearchNotReadyException();
-        }
         return indexingFacade.search(term);
     }
 
@@ -62,22 +54,9 @@ public class FileSearch {
     private void initialize() {
         assert config != null;
         log.info("Initializing file search...");
-        status.set(Status.INDEXING);
-        final CompletableFuture<Void> feature = indexingFacade.indexAll(config.getWatchingFolders());
-        feature.whenComplete((unused, exception) -> {
-            if (exception == null) {
-                status.set(Status.READY);
-            } else {
-                status.set(Status.FAILED);
-            }
-            log.info("Index initialization completed, status: '{}'", status.get());
-        });
+        indexingFacade.indexAll(config.getWatchingFolders());
         fileSystemListener.listenFilesChanges(config.getWatchingFolders(),
                 indexingFacade::indexFile,
                 indexingFacade::removeIndex);
-    }
-
-    public Status getStatus() {
-        return status.get();
     }
 }

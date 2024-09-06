@@ -8,6 +8,7 @@ import com.jetbrains.fileindexing.search.SearchStrategy;
 import com.jetbrains.fileindexing.service.FileSystemListener;
 import com.jetbrains.fileindexing.service.FileTaxonomyService;
 import com.jetbrains.fileindexing.service.IndexService;
+import com.jetbrains.fileindexing.service.IndexingStatusService;
 
 /**
  * The {@code BeansAbstractFactory} interface defines a factory for creating instances of various services
@@ -61,5 +62,13 @@ public interface BeansAbstractFactory {
      * @return an instance of {@link IndexingFacade}
      */
     IndexingFacade indexingFacade(SearchStrategy searchStrategy);
+
+    /**
+     * Creates and returns an instance of {@link IndexingStatusService} for monitoring the status of indexing operations.
+     *
+     * @return an instance of {@link IndexingStatusService} that provides functionality for tracking the progress
+     *         and status of ongoing indexing processes.
+     */
+    IndexingStatusService indexingStatusService();
 
 }

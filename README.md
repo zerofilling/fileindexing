@@ -48,7 +48,7 @@ public class FileIndexingExample {
                 .build();
 
         // Wait for the index to be built
-        while (fileSearch.getStatus().equals(Status.INDEXING)) {
+        while (searchStrategy) {
             // Waiting for the index to be built
         }
 

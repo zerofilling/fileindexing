@@ -14,6 +14,7 @@ public class BeansFactoryImpl implements BeansAbstractFactory {
 
     // fields for singleton-like instances
     private FileTaxonomyService fileTaxonomyService;
+    private IndexingStatusService indexingStatusService;
 
     @Override
     public Indexing indexing(final SearchStrategy searchStrategy) {
@@ -51,5 +52,17 @@ public class BeansFactoryImpl implements BeansAbstractFactory {
     @Override
     public IndexingFacade indexingFacade(final SearchStrategy searchStrategy) {
         return new IndexingFacadeImpl(searchStrategy);
+    }
+
+    @Override
+    public IndexingStatusService indexingStatusService() {
+        if (indexingStatusService == null) {
+            synchronized (this) {
+                if (indexingStatusService == null) {
+                    indexingStatusService = new IndexingStatusServiceImpl();
+                }
+            }
+        }
+        return indexingStatusService;
     }
 }

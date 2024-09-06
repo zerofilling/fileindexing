@@ -2,8 +2,10 @@ package com.jetbrains.fileindexing;
 
 import com.google.common.collect.Lists;
 import com.jetbrains.fileindexing.config.Config;
+import com.jetbrains.fileindexing.config.FactoryContainer;
 import com.jetbrains.fileindexing.processor.FileSearch;
 import com.jetbrains.fileindexing.search.TextContainsSearchStrategy;
+import com.jetbrains.fileindexing.service.IndexingStatusService;
 import com.jetbrains.fileindexing.utils.Status;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -21,6 +23,9 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SingleFileSearchTest {
+
+    private static final IndexingStatusService indexingStatusService = FactoryContainer.beansAbstractFactory()
+            .indexingStatusService();
 
     private static final List<File> watchingFolders = new ArrayList<>();
     private FileSearch fileSearch;
@@ -56,7 +61,7 @@ public class SingleFileSearchTest {
 
     @Test
     void testSingleFileSearching() {
-        while (fileSearch.getStatus().equals(Status.INDEXING)) {
+        while (indexingStatusService.statusIs(Status.INDEXING)) {
             // wait for init indexes
         }
         List<File> result = fileSearch.search("MetaDataService");
@@ -68,7 +73,7 @@ public class SingleFileSearchTest {
 
     @Test
     void testSingleFileChangeSearching() {
-        while (fileSearch.getStatus().equals(Status.INDEXING)) {
+        while (indexingStatusService.statusIs(Status.INDEXING)) {
             // wait for init indexes
         }
         List<File> result = fileSearch.search("class IndexingImpl");

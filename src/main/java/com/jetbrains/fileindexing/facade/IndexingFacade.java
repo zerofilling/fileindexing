@@ -1,6 +1,7 @@
 package com.jetbrains.fileindexing.facade;
 
 import com.jetbrains.fileindexing.search.SearchStrategy;
+import com.jetbrains.fileindexing.utils.SearchNotReadyException;
 
 import java.io.File;
 import java.util.List;
@@ -19,9 +20,8 @@ public interface IndexingFacade {
      * This method returns a {@link CompletableFuture} that completes when the indexing process is finished.
      *
      * @param watchingFolders the list of directories to be indexed
-     * @return a {@link CompletableFuture} that completes when the indexing process is done
      */
-    CompletableFuture<Void> indexAll(List<File> watchingFolders);
+    void indexAll(List<File> watchingFolders);
 
     /**
      * Indexes the specified file using the provided search strategy.
@@ -42,6 +42,7 @@ public interface IndexingFacade {
      *
      * @param term            the term to search for
      * @return a list of files that match the search term
+     * @throws SearchNotReadyException if the search is attempted while indexing is still in progress
      */
-    List<File> search(String term);
+    List<File> search(String term) throws SearchNotReadyException;
 }
