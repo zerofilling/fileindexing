@@ -27,7 +27,7 @@ public class IndexRepositoryImpl implements IndexRepository {
             return Collections.emptyList();
         }
 
-        final Set<String> results = new HashSet<>();
+        final List<String> results = new ArrayList<>();
         for (Map.Entry<String, Map<String, Set<Integer>>> entry : tokenKeyIndex.entrySet()) {
             final String key = entry.getKey();
             final Map<String, Set<Integer>> tokenIndex = entry.getValue();
