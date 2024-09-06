@@ -43,6 +43,8 @@ public class IndexRepositoryImpl implements IndexRepository {
                         boolean present = nextIndexes.stream().anyMatch(it -> initialIndexes.contains(it - finalI));
                         if (present) {
                             addResult = true;
+                        } else {
+                            break;
                         }
                     }
                 }
