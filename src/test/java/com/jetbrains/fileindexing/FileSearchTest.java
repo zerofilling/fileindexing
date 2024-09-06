@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -64,6 +65,16 @@ public class FileSearchTest {
 
         result = fileSearch.search("class IndexingImpl");
         assertEquals(result.size(), 1);
+
+        result = fileSearch.search("test1 test2 test3 test4");
+        assertEquals(result.size(), 2);
+        Set<String> p1p2 = Set.of("p1.txt", "p2.txt");
+        assertEquals(result.stream().filter(it -> p1p2.contains(it.getName())).toList().size(), 2);
+
+        result = fileSearch.search("test1 test3 test4");
+        assertEquals(result.size(), 2);
+        Set<String> p2p3 = Set.of("p2.txt", "p3.txt");
+        assertEquals(result.stream().filter(it -> p2p3.contains(it.getName())).toList().size(), 2);
     }
 
     @Test

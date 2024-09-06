@@ -61,7 +61,7 @@ public class IndexRepositoryImpl implements IndexRepository {
     public void putIndex(final String key, final String value) {
         final List<String> tokens = lexer.tokenize(value.toLowerCase());
         LoopWithIndexConsumer.forEach(tokens, (token, index) -> {
-            final Map<String, Set<Integer>> indexKeyValkSetMap = tokenKeyIndex.computeIfAbsent(key, s -> new LinkedHashMap<>());
+            final Map<String, Set<Integer>> indexKeyValkSetMap = tokenKeyIndex.computeIfAbsent(key, s -> new HashMap<>());
             indexKeyValkSetMap.computeIfAbsent(token, s -> new HashSet<>());
             indexKeyValkSetMap.get(token).add(index);
         });
