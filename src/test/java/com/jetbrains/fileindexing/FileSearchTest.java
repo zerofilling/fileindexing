@@ -68,6 +68,9 @@ public class FileSearchTest {
         List<File> result = fileSearch.search("interface");
         assertEquals(result.size(), 3);
 
+        result = fileSearch.search("one two four");
+        assertEquals(result.size(), 0);
+
         result = fileSearch.search("class IndexingImpl");
         assertEquals(result.size(), 1);
 
