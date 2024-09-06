@@ -80,6 +80,10 @@ public class FileSearchTest {
         assertEquals(result.size(), 2);
         Set<String> p2p3 = Set.of("p2.txt", "p3.txt");
         assertEquals(result.stream().filter(it -> p2p3.contains(it.getName())).toList().size(), 2);
+
+        result = fileSearch.search("test1 test4 test4");
+        assertEquals(result.size(), 0);
+
     }
 
     @Test
