@@ -21,7 +21,7 @@ public class IndexRepositoryImpl implements IndexRepository {
 
     @Override
     public List<String> search(final String term) {
-        final List<String> searchTokens = lexer.tokenize(term.toLowerCase());
+        final List<String> searchTokens = lexer.tokenize(term);
 
         if (searchTokens.isEmpty()) {
             return Collections.emptyList();
@@ -61,7 +61,7 @@ public class IndexRepositoryImpl implements IndexRepository {
 
     @Override
     public void putIndex(final String key, final String value) {
-        final List<String> tokens = lexer.tokenize(value.toLowerCase());
+        final List<String> tokens = lexer.tokenize(value);
         LoopWithIndexConsumer.forEach(tokens, (token, index) -> {
             final Map<String, Set<Integer>> indexKeyValkSetMap = keyTokenIndex.computeIfAbsent(key, s -> new HashMap<>());
             indexKeyValkSetMap.computeIfAbsent(token, s -> new HashSet<>());

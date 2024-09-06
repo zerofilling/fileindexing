@@ -26,8 +26,7 @@ public class DefaultLexer implements Lexer {
      */
     @Override
     public List<String> tokenize(final String text) {
-        return Arrays.stream(text.split("\\s+"))
-                .map(String::toLowerCase)
+        return Arrays.stream(text.toLowerCase().split("\\s+"))
                 .collect(Collectors.toList());
     }
 }
