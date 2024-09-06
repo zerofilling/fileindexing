@@ -26,8 +26,8 @@ public class IndexRepositoryImpl implements IndexRepository {
         }
 
         Map<String, Set<Integer>> resultMap = null;
-        int index = 0;
-        for (String token : searchTokens) {
+        for (int index = 0; index < searchTokens.size(); ++index) {
+            String token = searchTokens.get(index);
             Map<String, Set<Integer>> keyIndexMap = tensor3D.getKeyIndexKeyMap(token);
             if (resultMap != null) {
                 for (Iterator<Map.Entry<String, Set<Integer>>> iterator = resultMap.entrySet().iterator(); iterator.hasNext(); ) {
@@ -37,7 +37,7 @@ public class IndexRepositoryImpl implements IndexRepository {
                     Set<Integer> newIndexes = keyIndexMap.get(resultKey);
                     if (newIndexes != null) {
                         int finalIndex = index;
-                        if(resultIndices.stream().noneMatch(it->newIndexes.contains(it+ finalIndex))) {
+                        if (resultIndices.stream().noneMatch(it -> newIndexes.contains(it + finalIndex))) {
                             iterator.remove();
                         }
                     } else {
@@ -45,12 +45,11 @@ public class IndexRepositoryImpl implements IndexRepository {
                     }
                 }
             } else {
-                if(keyIndexMap == null) {
+                if (keyIndexMap == null) {
                     return Collections.emptyList();
                 }
                 resultMap = new HashMap<>(keyIndexMap);
             }
-            index++;
         }
         return new ArrayList<>(resultMap.keySet());
     }
@@ -58,9 +57,7 @@ public class IndexRepositoryImpl implements IndexRepository {
     @Override
     public void putIndex(final String key, final String value) {
         final List<String> tokens = lexer.tokenize(value);
-        LoopWithIndexConsumer.forEach(tokens, (token, index) -> {
-            tensor3D.add(key, token, index);
-        });
+        LoopWithIndexConsumer.forEach(tokens, (token, index) -> tensor3D.add(key, token, index));
     }
 
     @Override
