@@ -1,56 +1,74 @@
 package com.jetbrains.fileindexing.repository;
 
 import com.jetbrains.fileindexing.lexer.Lexer;
+import com.jetbrains.fileindexing.utils.LoopWithIndexConsumer;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class IndexRepositoryImpl implements IndexRepository {
 
-    private final Map<String, String> indexStore;
+
+    // key, token, index
+    private final Map<String, Map<String, Set<Integer>>> tokenKeyIndex;
+
     private final Lexer lexer;
 
     public IndexRepositoryImpl(final Lexer lexer) {
         this.lexer = lexer;
-        this.indexStore = new ConcurrentHashMap<>();
+        this.tokenKeyIndex = new ConcurrentHashMap<>();
     }
 
     @Override
     public List<String> search(final String term) {
         final List<String> searchTokens = lexer.tokenize(term.toLowerCase());
-        return indexStore.entrySet().stream()
-                .filter(entry -> {
-                    List<String> indexedTokens = lexer.tokenize(entry.getValue().toLowerCase());
-                    return containsPhrase(indexedTokens, searchTokens);
-                })
-                .map(Map.Entry::getKey)
-                .distinct()
-                .collect(Collectors.toList());
-    }
 
-    private boolean containsPhrase(final List<String> indexedTokens, final List<String> searchTokens) {
         if (searchTokens.isEmpty()) {
-            return false;
+            return Collections.emptyList();
         }
 
-        final int searchSize = searchTokens.size();
-        for (int i = 0; i <= indexedTokens.size() - searchSize; i++) {
-            if (indexedTokens.subList(i, i + searchSize).equals(searchTokens)) {
-                return true;
+        final Set<String> results = new HashSet<>();
+        for (Map.Entry<String, Map<String, Set<Integer>>> entry : tokenKeyIndex.entrySet()) {
+            final String key = entry.getKey();
+            final Map<String, Set<Integer>> tokenIndex = entry.getValue();
+
+            Set<Integer> initialIndexes = tokenIndex.get(searchTokens.get(0));
+            if (searchTokens.size() > 1) {
+                boolean addResult = false;
+                for (int i = 1; i < searchTokens.size(); ++i) {
+                    String nextToken = searchTokens.get(i);
+                    Set<Integer> nextIndexes = tokenIndex.get(nextToken);
+                    if (nextIndexes != null) {
+                        int finalI = i;
+                        boolean present = nextIndexes.stream().anyMatch(it -> initialIndexes.contains(it - finalI));
+                        if (present) {
+                            addResult = true;
+                        }
+                    }
+                }
+                if (addResult) {
+                    results.add(key);
+                }
+            } else if (initialIndexes != null) {
+                results.add(key);
             }
         }
-        return false;
+
+        return new ArrayList<>(results);
     }
 
     @Override
     public void putIndex(final String key, final String value) {
-        indexStore.put(key, value);
+        final List<String> tokens = lexer.tokenize(value.toLowerCase());
+        LoopWithIndexConsumer.forEach(tokens, (token, index) -> {
+            final Map<String, Set<Integer>> indexKeyValkSetMap = tokenKeyIndex.computeIfAbsent(key, s -> new LinkedHashMap<>());
+            indexKeyValkSetMap.computeIfAbsent(token, s -> new HashSet<>());
+            indexKeyValkSetMap.get(token).add(index);
+        });
     }
 
     @Override
     public void removeIndex(final String key) {
-        indexStore.remove(key);
+        tokenKeyIndex.remove(key);
     }
 }
