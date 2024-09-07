@@ -30,7 +30,6 @@ public class IndexRepositoryImpl implements IndexRepository {
             // Get next token
             String token = searchTokens.get(i);
             // Retrieve (key -> Set<indices>) map for token. This map represents in which key token appears on which indexes
-            Map<String, Set<Integer>> keyIndexMap = tensor3D.getKeyIndexKeyMap(token);
             if (resultMap != null) {
                 // Iterating through first iteration's initialized map and remove on the fly the key in the case when
                 // indexes for the next token does not contain one of index+i of
@@ -38,7 +37,7 @@ public class IndexRepositoryImpl implements IndexRepository {
                     Map.Entry<String, Set<Integer>> indexKeyEntry = iterator.next();
                     String resultKey = indexKeyEntry.getKey();
                     Set<Integer> resultIndices = indexKeyEntry.getValue();
-                    Set<Integer> newIndexes = keyIndexMap.get(resultKey);
+                    Set<Integer> newIndexes = tensor3D.getIndexes(token, resultKey);
                     if (newIndexes != null) {
                         int finalI = i;
                         if (resultIndices.stream().noneMatch(it -> newIndexes.contains(it + finalI))) {
@@ -49,11 +48,11 @@ public class IndexRepositoryImpl implements IndexRepository {
                     }
                 }
             } else {
-                if (keyIndexMap == null) {
+                if (!tensor3D.tokenExists(token)) {
                     return Collections.emptyList();
                 }
                 // At first iteration initializing first token's appears keys for feature filtering
-                resultMap = new HashMap<>(keyIndexMap);
+                resultMap = tensor3D.duplicateTokenMap(token);
             }
         }
         return new ArrayList<>(resultMap.keySet());
