@@ -1,6 +1,5 @@
 package com.jetbrains.fileindexing.utils;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +30,7 @@ public class Tensor3D {
      */
     public void add(String key, String token, Integer index) {
         tokenToKeyIndexMap.computeIfAbsent(token, t -> new ConcurrentHashMap<>())
-                .computeIfAbsent(key, k -> new HashSet<>())
+                .computeIfAbsent(key, k -> ConcurrentHashMap.newKeySet())
                 .add(index);
     }
 
