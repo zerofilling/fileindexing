@@ -35,12 +35,12 @@ public class IndexRepositoryImpl implements IndexRepository {
                 // indexes for the next token does not contain one of index+i of
                 for (Iterator<Map.Entry<String, Set<Integer>>> iterator = resultMap.entrySet().iterator(); iterator.hasNext(); ) {
                     Map.Entry<String, Set<Integer>> indexKeyEntry = iterator.next();
-                    String resultKey = indexKeyEntry.getKey();
-                    Set<Integer> resultIndices = indexKeyEntry.getValue();
-                    Set<Integer> newIndexes = tensor3D.getIndexes(token, resultKey);
+                    String filePath = indexKeyEntry.getKey();
+                    Set<Integer> firstTokenIndices = indexKeyEntry.getValue();
+                    Set<Integer> newIndexes = tensor3D.getIndexes(token, filePath);
                     if (newIndexes != null) {
                         int finalI = i;
-                        if (resultIndices.stream().noneMatch(it -> newIndexes.contains(it + finalI))) {
+                        if (firstTokenIndices.stream().noneMatch(it -> newIndexes.contains(it + finalI))) {
                             iterator.remove();
                         }
                     } else {
