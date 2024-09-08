@@ -1,10 +1,12 @@
 package com.jetbrains.fileindexing.utils;
 
+import com.google.common.collect.Sets;
+
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Represents a 3D tensor-like data structure that maps tokens to keys and indices.
@@ -32,7 +34,7 @@ public class Tensor3D {
      */
     public void add(String key, String token, Integer index) {
         tokenToKeyIndexMap.computeIfAbsent(token, t -> new ConcurrentHashMap<>())
-                .computeIfAbsent(key, k -> ConcurrentHashMap.newKeySet())
+                .computeIfAbsent(key, k -> Sets.newConcurrentHashSet())
                 .add(index);
     }
 
@@ -66,7 +68,7 @@ public class Tensor3D {
         Map<String, Set<Integer>> stringSetMap = tokenToKeyIndexMap.get(token);
         if (stringSetMap != null) {
             Set<Integer> indices = stringSetMap.get(key);
-            return indices == null ? null : new HashSet<>(indices);
+            return indices == null ? null : Sets.newConcurrentHashSet(indices);
         }
         return null;
     }
@@ -87,7 +89,7 @@ public class Tensor3D {
     }
 
     /**
-     * Creates a duplicate of the token-to-key index map for the specified token.
+     * Creates a deep copy of the token-to-key index map for the specified token.
      * <p>
      * This method returns a new {@link HashMap} containing the indices associated with the specified token.
      * The returned map is a copy and does not affect the original tensor's state.
@@ -99,6 +101,9 @@ public class Tensor3D {
      */
     public Map<String, Set<Integer>> getTokenMap(String token) {
         Map<String, Set<Integer>> keyIndexesMap = tokenToKeyIndexMap.get(token);
-        return keyIndexesMap == null ? null : new HashMap<>(keyIndexesMap);
+        return keyIndexesMap == null
+                ? null
+                : keyIndexesMap.entrySet().stream().collect(Collectors.toConcurrentMap(Map.Entry::getKey,
+                stringSetEntry -> Sets.newConcurrentHashSet(stringSetEntry.getValue())));
     }
 }
