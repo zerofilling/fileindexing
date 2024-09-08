@@ -51,7 +51,7 @@ public class IndexRepositoryImpl implements IndexRepository {
     }
 
     private boolean checkOtherTokens(final List<String> searchTokens, final String firstTokenKey, final Integer firstIndex) {
-        for (int i = 1; i < searchTokens.size(); ++i) {
+        for (int i = 1; i < searchTokens.size(); i++) {
             final String currentToken = searchTokens.get(i);
             if (!isTokenInIndex(firstTokenKey, currentToken, firstIndex + i)) {
                 return false;
