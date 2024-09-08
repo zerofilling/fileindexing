@@ -55,6 +55,9 @@ public class IndexRepositoryImpl implements IndexRepository {
                 firstTokenMap = tensor3D.duplicateTokenMap(token);
                 prevTokenMap = firstTokenMap;
             }
+            if(prevTokenMap == null) {
+                return Collections.emptyList();
+            }
         }
         return new ArrayList<>(firstTokenMap.keySet());
     }

@@ -65,10 +65,10 @@ public class FileSearchTest {
         while (indexingStatusService.statusIs(Status.INDEXING)) {
             // wait for init indexes
         }
-//        List<File> result = fileSearch.search("interface");
-//        assertEquals(result.size(), 3);
+        List<File> result = fileSearch.search("interface");
+        assertEquals(result.size(), 3);
 
-        List<File> result = fileSearch.search("A B Z C");
+        result = fileSearch.search("A B Z C");
         assertEquals(0, result.size());
 
         result = fileSearch.search("A D C E");
