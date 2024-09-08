@@ -96,6 +96,7 @@ public class Tensor3D {
      * if the token does not exist in the tensor.
      */
     public Map<String, Set<Integer>> duplicateTokenMap(String token) {
-        return new HashMap<>(tokenToKeyIndexMap.get(token));
+        Map<String, Set<Integer>> keyIndexesMap = tokenToKeyIndexMap.get(token);
+        return keyIndexesMap == null ? null : new HashMap<>(keyIndexesMap);
     }
 }
