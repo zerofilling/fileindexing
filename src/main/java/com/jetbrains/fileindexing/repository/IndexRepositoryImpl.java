@@ -25,37 +25,38 @@ public class IndexRepositoryImpl implements IndexRepository {
             return Collections.emptyList();
         }
 
-        Map<String, Set<Integer>> resultMap = null;
-        for (int i = 0; i < searchTokens.size(); ++i) {
-            // Get next token
-            String token = searchTokens.get(i);
+        Map<String, Set<Integer>> firstTokenMap = null;
+        Map<String, Set<Integer>> prevTokenMap = null;
+        for (String token: searchTokens) {
             // Retrieve (key -> Set<indices>) map for token. This map represents in which key token appears on which indexes
-            if (resultMap != null) {
+            if (firstTokenMap != null) {
                 // Iterating through first iteration's initialized map and remove on the fly the key in the case when
                 // indexes for the next token does not contain one of index+i of
-                for (Iterator<Map.Entry<String, Set<Integer>>> iterator = resultMap.entrySet().iterator(); iterator.hasNext(); ) {
+                for (Iterator<Map.Entry<String, Set<Integer>>> iterator = firstTokenMap.entrySet().iterator(); iterator.hasNext(); ) {
                     Map.Entry<String, Set<Integer>> indexKeyEntry = iterator.next();
                     String filePath = indexKeyEntry.getKey();
-                    Set<Integer> firstTokenIndices = indexKeyEntry.getValue();
                     Set<Integer> newIndexes = tensor3D.getIndexes(token, filePath);
                     if (newIndexes != null) {
-                        int finalI = i;
-                        if (firstTokenIndices.stream().noneMatch(it -> newIndexes.contains(it + finalI))) {
+                        Set<Integer> prevTokenIndices = prevTokenMap.get(filePath);
+                        if (prevTokenIndices.stream().noneMatch(it -> newIndexes.contains(it + 1))) {
                             iterator.remove();
                         }
                     } else {
                         iterator.remove();
                     }
                 }
+                // duplicating map to have no chance to change it here.
+                prevTokenMap = tensor3D.duplicateTokenMap(token);
             } else {
                 if (!tensor3D.tokenExists(token)) {
                     return Collections.emptyList();
                 }
                 // At first iteration initializing first token's appears keys for feature filtering
-                resultMap = tensor3D.duplicateTokenMap(token);
+                firstTokenMap = tensor3D.duplicateTokenMap(token);
+                prevTokenMap = firstTokenMap;
             }
         }
-        return new ArrayList<>(resultMap.keySet());
+        return new ArrayList<>(firstTokenMap.keySet());
     }
 
     @Override
