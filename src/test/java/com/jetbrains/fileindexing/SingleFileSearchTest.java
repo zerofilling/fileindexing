@@ -65,10 +65,10 @@ public class SingleFileSearchTest {
             // wait for init indexes
         }
         List<File> result = fileSearch.search("MetaDataService");
-        assertEquals(result.size(), 1);
+        assertEquals(1, result.size());
 
         result = fileSearch.search("class IndexingImpl");
-        assertEquals(result.size(), 0);
+        assertEquals(0, result.size());
     }
 
     @Test
@@ -77,7 +77,7 @@ public class SingleFileSearchTest {
             // wait for init indexes
         }
         List<File> result = fileSearch.search("class IndexingImpl");
-        assertEquals(result.size(), 0);
+        assertEquals(0, result.size());
         try {
             File file = new File(watchingFolder, "1/1.txt");
             String existingContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
@@ -93,7 +93,7 @@ public class SingleFileSearchTest {
             throw new RuntimeException(e);
         }
         result = fileSearch.search("class IndexingImpl");
-        assertEquals(result.size(), 1);
+        assertEquals(1, result.size());
 
     }
 }

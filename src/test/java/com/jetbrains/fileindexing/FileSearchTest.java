@@ -69,31 +69,31 @@ public class FileSearchTest {
 //        assertEquals(result.size(), 3);
 
         List<File> result = fileSearch.search("A B C D");
-        assertEquals(result.size(), 0);
+        assertEquals(0, result.size());
 
         result = fileSearch.search("A D C E");
-        assertEquals(result.size(), 1);
+        assertEquals(1, result.size());
         Set<String> file = Set.of("file.txt");
         assertEquals(result.stream().filter(it -> file.contains(it.getName())).toList().size(), 1);
 
         result = fileSearch.search("one two four");
-        assertEquals(result.size(), 0);
+        assertEquals(0, result.size());
 
         result = fileSearch.search("class IndexingImpl");
-        assertEquals(result.size(), 1);
+        assertEquals(1, result.size());
 
         result = fileSearch.search("test1 test2 test3 test4");
-        assertEquals(result.size(), 2);
+        assertEquals(2, result.size());
         Set<String> p1p2 = Set.of("p1.txt", "p2.txt");
         assertEquals(result.stream().filter(it -> p1p2.contains(it.getName())).toList().size(), 2);
 
         result = fileSearch.search("test1 test3 test4");
-        assertEquals(result.size(), 2);
+        assertEquals(2, result.size());
         Set<String> p2p3 = Set.of("p2.txt", "p3.txt");
         assertEquals(result.stream().filter(it -> p2p3.contains(it.getName())).toList().size(), 2);
 
         result = fileSearch.search("test1 test4 test4");
-        assertEquals(result.size(), 0);
+        assertEquals(0, result.size());
 
     }
 
@@ -104,7 +104,7 @@ public class FileSearchTest {
             // wait for init indexes
         }
         List<File> result = fileSearch.search("interface");
-        assertEquals(result.size(), 3);
+        assertEquals(3, result.size());
         File filToDelete = new File(watchingFolder, "1/1.txt");
         filToDelete.delete();
         try {
@@ -114,7 +114,7 @@ public class FileSearchTest {
             throw new RuntimeException(e);
         }
         result = fileSearch.search("interface");
-        assertEquals(result.size(), 2);
+        assertEquals(2, result.size());
     }
 
     @Test
@@ -124,7 +124,7 @@ public class FileSearchTest {
             // wait for init indexes
         }
         List<File> result = fileSearch.search("interface");
-        assertEquals(result.size(), 3);
+        assertEquals(3, result.size());
         File deleteFolder = new File(watchingFolder, "1/3");
         try {
             FileUtils.deleteDirectory(deleteFolder);
@@ -138,7 +138,7 @@ public class FileSearchTest {
             throw new RuntimeException(e);
         }
         result = fileSearch.search("interface");
-        assertEquals(result.size(), 2);
+        assertEquals(2, result.size());
     }
 
     @Test
@@ -148,7 +148,7 @@ public class FileSearchTest {
             // wait for init indexes
         }
         List<File> result = fileSearch.search("interface");
-        assertEquals(result.size(), 3);
+        assertEquals(3, result.size());
         File fileToCopy = new File(watchingFolder, "1/1.txt");
         try {
             FileUtils.copyFile(fileToCopy, new File(fileToCopy.getParentFile(), "1-copy.txt"));
@@ -162,7 +162,7 @@ public class FileSearchTest {
             throw new RuntimeException(e);
         }
         result = fileSearch.search("interface");
-        assertEquals(result.size(), 4);
+        assertEquals(4, result.size());
     }
 
     @Test
@@ -172,7 +172,7 @@ public class FileSearchTest {
             // wait for init indexes
         }
         List<File> result = fileSearch.search("interface");
-        assertEquals(result.size(), 3);
+        assertEquals(3, result.size());
         File folderToCopy = new File(watchingFolder, "1/3");
         try {
             FileUtils.copyDirectory(folderToCopy, new File(folderToCopy.getParentFile(), "1/4"));
@@ -186,6 +186,6 @@ public class FileSearchTest {
             throw new RuntimeException(e);
         }
         result = fileSearch.search("interface");
-        assertEquals(result.size(), 4);
+        assertEquals(4, result.size());
     }
 }
