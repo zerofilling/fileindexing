@@ -37,8 +37,8 @@ public class IndexRepositoryImpl implements IndexRepository {
 
             boolean termMatchesKey = false;
             for (Integer firstIndex : firstTokenIndexes) {
-                final boolean oneOfOtherTokenValid = checkOtherTokens(searchTokens, firstTokenKey, firstIndex);
-                if(oneOfOtherTokenValid) {
+                final boolean otherTokensValid = checkOtherTokens(searchTokens, firstTokenKey, firstIndex);
+                if(otherTokensValid) {
                     termMatchesKey = true;
                     break;
                 }
