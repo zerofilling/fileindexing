@@ -25,41 +25,52 @@ public class IndexRepositoryImpl implements IndexRepository {
             return Collections.emptyList();
         }
 
-        Map<String, Set<Integer>> firstTokenMap = null;
-        Map<String, Set<Integer>> prevTokenMap = null;
-        for (String token: searchTokens) {
-            // Retrieve (key -> Set<indices>) map for token. This map represents in which key token appears on which indexes
-            if (firstTokenMap != null) {
-                // Iterating through first iteration's initialized map and remove on the fly the key in the case when
-                // indexes for the next token does not contain one of index+i of
-                for (Iterator<Map.Entry<String, Set<Integer>>> iterator = firstTokenMap.entrySet().iterator(); iterator.hasNext(); ) {
-                    Map.Entry<String, Set<Integer>> indexKeyEntry = iterator.next();
-                    String filePath = indexKeyEntry.getKey();
-                    Set<Integer> newIndexes = tensor3D.getIndices(token, filePath);
-                    if (newIndexes != null) {
-                        Set<Integer> prevTokenIndices = prevTokenMap.get(filePath);
-                        if (prevTokenIndices.stream().noneMatch(it -> newIndexes.contains(it + 1))) {
-                            iterator.remove();
-                        }
-                    } else {
-                        iterator.remove();
-                    }
-                }
-                // duplicating map to have no chance to change it here.
-                prevTokenMap = tensor3D.getTokenMap(token);
-            } else {
-                if (!tensor3D.tokenExists(token)) {
-                    return Collections.emptyList();
-                }
-                // At first iteration initializing first token's appears keys for feature filtering
-                firstTokenMap = tensor3D.getTokenMap(token);
-                prevTokenMap = firstTokenMap;
+        String firstToken = searchTokens.get(0);
+        if (!tensor3D.tokenExists(firstToken)) {
+            return Collections.emptyList();
+        }
+        Map<String, Set<Integer>> firstTokenMap = tensor3D.getTokenMap(firstToken);
+        if (firstTokenMap == null) {
+            return Collections.emptyList();
+        }
+        for (Iterator<Map.Entry<String, Set<Integer>>> iterator = firstTokenMap.entrySet().iterator(); iterator.hasNext(); ) {
+            final Map.Entry<String, Set<Integer>> keyIndexesEntry = iterator.next();
+            final String firstTokenKey = keyIndexesEntry.getKey();
+            final Set<Integer> firstTokenIndexes = keyIndexesEntry.getValue();
+
+            boolean termMatchesKey = false;
+            for (Integer firstIndex : firstTokenIndexes) {
+                final boolean oneOfOtherTokenValid = oneOfOtherTokenValid(searchTokens, firstTokenKey, firstIndex);
+                termMatchesKey = termMatchesKey || oneOfOtherTokenValid;
             }
-            if(prevTokenMap == null) {
-                return Collections.emptyList();
+            if (!termMatchesKey) {
+                iterator.remove();
             }
         }
         return new ArrayList<>(firstTokenMap.keySet());
+    }
+
+    private boolean oneOfOtherTokenValid(final List<String> searchTokens, final String firstTokenKey, final Integer firstIndex) {
+        boolean allDone = true;
+        for (int i = 1; i < searchTokens.size(); ++i) {
+            final String currentToken = searchTokens.get(i);
+            if (!isTokenInIndex(firstTokenKey, currentToken, firstIndex + i)) {
+                allDone = false;
+            }
+        }
+        return allDone;
+    }
+
+    private boolean isTokenInIndex(final String key, final String token, final int index) {
+        final Map<String, Set<Integer>> keyMap = tensor3D.getTokenMap(token);
+        if (keyMap == null) {
+            return false;
+        }
+        final Set<Integer> indexes = keyMap.get(key);
+        if (indexes == null) {
+            return false;
+        }
+        return indexes.contains(index);
     }
 
     @Override

@@ -71,6 +71,9 @@ public class FileSearchTest {
         result = fileSearch.search("A B Z C");
         assertEquals(0, result.size());
 
+        result = fileSearch.search("A B C D");
+        assertEquals(0, result.size());
+
         result = fileSearch.search("A D C E");
         assertEquals(1, result.size());
         Set<String> file = Set.of("file.txt");
