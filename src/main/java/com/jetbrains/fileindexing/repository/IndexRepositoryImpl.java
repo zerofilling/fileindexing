@@ -25,12 +25,12 @@ public class IndexRepositoryImpl implements IndexRepository {
             return Collections.emptyList();
         }
 
-        String firstToken = searchTokens.get(0);
+        final String firstToken = searchTokens.get(0);
         if (!tensor3D.tokenExists(firstToken)) {
             return Collections.emptyList();
         }
-        Map<String, Set<Integer>> firstTokenMap = tensor3D.getTokenMap(firstToken);
-        for (Iterator<Map.Entry<String, Set<Integer>>> iterator = firstTokenMap.entrySet().iterator(); iterator.hasNext(); ) {
+        final Map<String, Set<Integer>> firstTokenMap = tensor3D.getTokenMap(firstToken);
+        for (final Iterator<Map.Entry<String, Set<Integer>>> iterator = firstTokenMap.entrySet().iterator(); iterator.hasNext(); ) {
             final Map.Entry<String, Set<Integer>> keyIndexesEntry = iterator.next();
             final String firstTokenKey = keyIndexesEntry.getKey();
             final Set<Integer> firstTokenIndexes = keyIndexesEntry.getValue();
