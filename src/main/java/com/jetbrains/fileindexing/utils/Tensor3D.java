@@ -1,6 +1,7 @@
 package com.jetbrains.fileindexing.utils;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,10 +62,11 @@ public class Tensor3D {
      * @return A set of indices associated with the specified token and key, or {@code null} if either the
      * token or key does not exist in the tensor.
      */
-    public Set<Integer> getIndexes(String token, String key) {
+    public Set<Integer> getIndices(String token, String key) {
         Map<String, Set<Integer>> stringSetMap = tokenToKeyIndexMap.get(token);
         if (stringSetMap != null) {
-            return stringSetMap.get(key);
+            Set<Integer> indices = stringSetMap.get(key);
+            return indices == null ? null : new HashSet<>(indices);
         }
         return null;
     }
@@ -95,7 +97,7 @@ public class Tensor3D {
      * @return A {@link Map} containing the keys and associated indices for the specified token, or {@code null}
      * if the token does not exist in the tensor.
      */
-    public Map<String, Set<Integer>> duplicateTokenMap(String token) {
+    public Map<String, Set<Integer>> getTokenMap(String token) {
         Map<String, Set<Integer>> keyIndexesMap = tokenToKeyIndexMap.get(token);
         return keyIndexesMap == null ? null : new HashMap<>(keyIndexesMap);
     }

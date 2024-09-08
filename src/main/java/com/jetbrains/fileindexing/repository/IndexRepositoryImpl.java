@@ -35,7 +35,7 @@ public class IndexRepositoryImpl implements IndexRepository {
                 for (Iterator<Map.Entry<String, Set<Integer>>> iterator = firstTokenMap.entrySet().iterator(); iterator.hasNext(); ) {
                     Map.Entry<String, Set<Integer>> indexKeyEntry = iterator.next();
                     String filePath = indexKeyEntry.getKey();
-                    Set<Integer> newIndexes = tensor3D.getIndexes(token, filePath);
+                    Set<Integer> newIndexes = tensor3D.getIndices(token, filePath);
                     if (newIndexes != null) {
                         Set<Integer> prevTokenIndices = prevTokenMap.get(filePath);
                         if (prevTokenIndices.stream().noneMatch(it -> newIndexes.contains(it + 1))) {
@@ -46,13 +46,13 @@ public class IndexRepositoryImpl implements IndexRepository {
                     }
                 }
                 // duplicating map to have no chance to change it here.
-                prevTokenMap = tensor3D.duplicateTokenMap(token);
+                prevTokenMap = tensor3D.getTokenMap(token);
             } else {
                 if (!tensor3D.tokenExists(token)) {
                     return Collections.emptyList();
                 }
                 // At first iteration initializing first token's appears keys for feature filtering
-                firstTokenMap = tensor3D.duplicateTokenMap(token);
+                firstTokenMap = tensor3D.getTokenMap(token);
                 prevTokenMap = firstTokenMap;
             }
             if(prevTokenMap == null) {
