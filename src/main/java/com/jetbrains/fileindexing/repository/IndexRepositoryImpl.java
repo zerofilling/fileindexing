@@ -30,9 +30,6 @@ public class IndexRepositoryImpl implements IndexRepository {
             return Collections.emptyList();
         }
         Map<String, Set<Integer>> firstTokenMap = tensor3D.getTokenMap(firstToken);
-        if (firstTokenMap == null) {
-            return Collections.emptyList();
-        }
         for (Iterator<Map.Entry<String, Set<Integer>>> iterator = firstTokenMap.entrySet().iterator(); iterator.hasNext(); ) {
             final Map.Entry<String, Set<Integer>> keyIndexesEntry = iterator.next();
             final String firstTokenKey = keyIndexesEntry.getKey();
@@ -40,8 +37,11 @@ public class IndexRepositoryImpl implements IndexRepository {
 
             boolean termMatchesKey = false;
             for (Integer firstIndex : firstTokenIndexes) {
-                final boolean oneOfOtherTokenValid = oneOfOtherTokenValid(searchTokens, firstTokenKey, firstIndex);
-                termMatchesKey = termMatchesKey || oneOfOtherTokenValid;
+                final boolean oneOfOtherTokenValid = checkOtherTokens(searchTokens, firstTokenKey, firstIndex);
+                if(oneOfOtherTokenValid) {
+                    termMatchesKey = true;
+                    break;
+                }
             }
             if (!termMatchesKey) {
                 iterator.remove();
@@ -50,12 +50,13 @@ public class IndexRepositoryImpl implements IndexRepository {
         return new ArrayList<>(firstTokenMap.keySet());
     }
 
-    private boolean oneOfOtherTokenValid(final List<String> searchTokens, final String firstTokenKey, final Integer firstIndex) {
+    private boolean checkOtherTokens(final List<String> searchTokens, final String firstTokenKey, final Integer firstIndex) {
         boolean allDone = true;
         for (int i = 1; i < searchTokens.size(); ++i) {
             final String currentToken = searchTokens.get(i);
             if (!isTokenInIndex(firstTokenKey, currentToken, firstIndex + i)) {
                 allDone = false;
+                break;
             }
         }
         return allDone;
