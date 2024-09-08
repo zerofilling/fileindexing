@@ -51,15 +51,13 @@ public class IndexRepositoryImpl implements IndexRepository {
     }
 
     private boolean checkOtherTokens(final List<String> searchTokens, final String firstTokenKey, final Integer firstIndex) {
-        boolean allDone = true;
         for (int i = 1; i < searchTokens.size(); ++i) {
             final String currentToken = searchTokens.get(i);
             if (!isTokenInIndex(firstTokenKey, currentToken, firstIndex + i)) {
-                allDone = false;
-                break;
+                return false;
             }
         }
-        return allDone;
+        return true;
     }
 
     private boolean isTokenInIndex(final String key, final String token, final int index) {
